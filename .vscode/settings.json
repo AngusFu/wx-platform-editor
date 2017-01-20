@@ -1,0 +1,28 @@
+// 将设置放入此文件中以覆盖默认设置
+{
+  "editor.fontFamily": "Consolas",
+  "editor.insertSpaces": true,
+  "editor.fontSize": 24,
+  "editor.wrappingColumn": 100,
+  "editor.mouseWheelScrollSensitivity": 2,
+  "editor.renderWhitespace": "all",
+  "editor.renderIndentGuides": true,
+  "editor.renderControlCharacters": true,
+  "editor.tabSize": 2,
+  "typescript.tsdk": "C:/Users/fujun-iri/AppData/Roaming/npm/node_modules/typescript/lib",
+  "typescript.check.tscVersion": false,
+  "emmet.preferences": {
+    "css.autoInsertVendorPrefixes": false,
+    "scss.autoInsertVendorPrefixes": false,
+    "sass.autoInsertVendorPrefixes": false,
+    "less.autoInsertVendorPrefixes": false
+  },
+  "files.associations": {
+    "*.html": "html",
+    "*.css": "css",
+    "*.demo": "html"
+  },
+  "window.zoomLevel": 0,
+  "vsicons.dontShowNewVersionMessage": true,
+  "jshint.enable": false
+}

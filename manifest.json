@@ -1,0 +1,37 @@
+{
+    "name": "wx-platform-editor",
+    "description": "weixin public platform editor",
+    "version": "0.0.1",
+    "permissions": [
+        "tabs",
+        "contextMenus",
+        "activeTab",
+        "cookies",
+        "notifications",
+        "alarms",
+        "storage",
+        "webNavigation",
+        "clipboardRead",
+        "clipboardWrite",
+        "\u003Call_urls\u003E"
+    ],
+    "browser_action": {
+        "default_icon": "./img/wechat_128.png"
+    },
+    "icons": {
+        "32": "./img/wechat_32.png",
+        "64": "./img/wechat_64.png",
+        "128": "./img/wechat_128.png"
+    },
+    "content_scripts": [{
+        "run_at": "document_end",
+        "matches": ["https://mp.weixin.qq.com/cgi-bin/appmsg?t=media/appmsg_edit*"],
+        "js": ["./wxinject.js"]
+    }],
+    "background": {
+        "scripts": ["./background.js"]
+    },
+    "options_page": "./option/index.html",
+    "manifest_version": 2,
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+}
