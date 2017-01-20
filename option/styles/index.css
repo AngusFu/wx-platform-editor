@@ -145,6 +145,10 @@ html, body {
   line-height: 16px;
   white-space: nowrap!important;
 }
+.md-preview .lbr {
+  line-height: 0;
+  height: 0;
+}
 
 .md-preview .code {
   font-size: 12px;
