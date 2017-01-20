@@ -133,4 +133,12 @@
   });
   eidtorDOM.innerHTML = localStorage['wx-editor'] || '';
   dispatch(eidtorDOM, 'input');
+
+  // for online HTTP(s) version
+  if (/^https?:$/.test(location.protocol)) {
+    // add clip 
+    getDOM('#jsCopy').addEventListener('click', function() {
+      copy(previewDOM);
+    });
+  }
 })();
