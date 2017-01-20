@@ -89,7 +89,6 @@ const uploadImage = (function () {
   while (len--)
     if (content = scripts[len].textContent) {
       if (/try\s*\{\s*window\.wx\s*\=\s*\{\s*\n/m.test(content)) {
-        console.log(content)
         try {
           eval(content);
         } catch (e) {}

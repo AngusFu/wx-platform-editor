@@ -100,9 +100,6 @@ const store = {
 const requestUpload = (url) => {
   let hash = md5(url);
 
-  // TODO
-  // SVG to PNG
-  // size optimization
   if (/^data:image/.test(url)) {
     sendMsg(WX_PATTERN, {
       type: 'upload',
@@ -112,7 +109,12 @@ const requestUpload = (url) => {
   }
 
   if (/^https?:/.test(url)) {
-    fetchImage(url).then(data => sendMsg(WX_PATTERN, {
+    fetchImage({
+      url,
+      // TODO: we can use isuxCompress
+      middleware: checkAndReduceBlob
+    })
+    .then(data => data && sendMsg(WX_PATTERN, {
       type: 'upload',
       data,
       hash
@@ -200,6 +202,7 @@ document.addEventListener('paste', (e) => {
       getAll(`.hash_${hash}`, divDOM)
         .map(img => img.src = data.cdn_url);
     });
+    
     // inject
     sendMsg(WX_PATTERN, { type: 'inject', data: divDOM.innerHTML });
     // focus 
