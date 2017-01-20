@@ -28,6 +28,13 @@
     let text = this.innerText;
     offlineDIV.innerHTML = window.marked(text);
 
+    /**
+     * TODO
+     * 能否增加使用图片代码的选项
+     * 控制月影的在线站点即可
+     * http://code2img.test.h5jun.com/
+     */
+
     // 处理代码换行
     query('pre', function (pre) {
       // pre>code.lang-x
