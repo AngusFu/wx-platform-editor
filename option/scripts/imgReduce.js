@@ -47,36 +47,21 @@
   }
 
   /* opt {quality :0-1}*/
-  function imageReduce(files, cbk, opts) {
-    var opt = {
-      scale: 0.9,
-      quality: 0.8,
+  function imageReduce(file, cbk, opts) {
+    var opt = Object.assign({}, {
+      scale: .9,
+      quality: .99,
       type: 'image/jpeg'
+    }, (opts || {}));
+
+    var fReader = new FileReader();
+    fReader.onload = function (e) {
+      var result = e.target.result
+      imgScale(result, opt, function (file) {
+        cbk(file);
+      });
     };
-
-    Object.assign(opt, (opts || {}))
-
-    if (opt.scale == 1 || 1 == opt.quality) return cbk(files)
-
-    if (Object.prototype.toString.call(files) !== "[object Array]") {
-      files = [files];
-    }
-
-    var files_count = files.length,
-      ret = [];
-
-    for (var i = 0, j = files.length; i < j; i++) {
-      var fReader = new FileReader();
-      fReader.onload = function (e) {
-        var result = e.target.result
-        imgScale(result, opt, function (file) {
-          file && ret.push(file)
-          files_count--
-          if (files_count <= 0) cbk && cbk(ret)
-        })
-      };
-      fReader.readAsDataURL(files[i]);
-    }
+    fReader.readAsDataURL(file);
   }
 
   window.imgReduce = function (files, opt) {
