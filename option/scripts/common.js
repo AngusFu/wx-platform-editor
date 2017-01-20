@@ -1,4 +1,4 @@
-const log    = console.log.bind(console);
+const log = console.log.bind(console);
 const create = (tag) => document.createElement(tag);
 const getDOM = (s) => document.querySelector(s);
 const getAll = (s, target = document) => {
@@ -65,28 +65,98 @@ const blobToDataURI = (blob) => new Promise((resolve, reject) => {
  * TODO
  * 1. error handling with large GIFs
  * 2. SVGs
+ * 3. weixin API does not support WebP 
  */
 const checkAndReduceBlob = (blob) => {
-  if (blob.size < 2 * 1024 * 1024 && !/^image\/(png|jpg|jpeg)$/.test(blob.type)) {
-    return blob;
+  let type = blob.type;
+  if (blob.size < 2 * 1024 * 1024) {
+    if (/^image\/(png|jpg|jpeg|gif)$/.test(type)) {
+      return blob;
+    }
   }
+
+  // TODO
+  // large GIFs
+  // if (type === 'image/gif') {
+  //   return 
+  // }
 
   // still remains for some test cases
   return window.imgReduce(blob, {
-    scale: 0.9,
-    quality: 0.8,
-    type: 'image/jpeg'
-  }).then(checkAndReduce);
+    scale: 0.8,
+    quality: 0.9,
+    type: blob.type
+  }).then(checkAndReduceBlob);
 };
 
+/**
+ * https://zhitu.isux.us/
+ */
+const isuxUpload = (blob) => new Promise((resolve, reject) => {
+  let fileType = blob.type.replace('image/', '');
+  let fileName = Date.now() + '.' + fileType;
+  let oriSize = (blob.size / 1024) | 0;
+
+  let file = new File([blob], fileName, {
+    type: blob.type,
+    lastModified: new Date(Date.now() - Math.random() * 1000 * 3600 * 24 * 50)
+  });
+
+  let data = new FormData();
+  data.append('name', fileName);
+  // 10,20,30, ..., 100
+  // TODO: set options for choosing `compress` param
+  data.append('compress', 10);
+  data.append('oriSize', oriSize);
+  data.append('type', fileType);
+  data.append('fileSelect', file);
+  data.append('pngLess', 1);
+  data.append('isOa', 0);
+  data.append('typeChange', 1);
+
+  let xhr = new XMLHttpRequest();
+
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      try {
+        let res = JSON.parse(xhr.response);
+        if (res.code === 0) {
+          console.info('[isux compress]:', res);
+          resolve(`https:${res.url}`);
+        } else {
+          throw res;
+        }
+      } catch (e) {
+        reject({
+          error: e,
+          text: 'Error occurred: [' + xhr.responseText + ']'
+        });
+      }
+    }
+  };
+
+  xhr.open('POST', 'https://zhitu.isux.us/index.php/preview/imgcompress');
+  xhr.send(data);
+});
+
+/**
+ * use `zhitu.isux.us`
+ */
+const isuxCompress = (blob) => {
+  return isuxUpload(blob)
+    .then(url => fetch(url))
+    .then(res => res.blob());
+};
 
 /**
  * fetch image
  * transform it into BASE64
  */
-const fetchImage = (url) => {
+const fetchImage = ({ url, middleware }) => {
+  middleware = middleware || function (o) { return o };
+
   return fetch(url).then(r => r.blob())
-    .then(checkAndReduceBlob)
+    .then(middleware)
     .then(blobToDataURI)
     .catch(e => null);
 };
