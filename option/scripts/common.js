@@ -6,6 +6,99 @@ const getAll = (s, target = document) => {
 };
 
 /**
+ * md5
+ */
+const md5 = (function () {
+  let cache = new Map();
+
+  return (s) => {
+    if (cache.has(s)) {
+      return cache.get(s);
+    } else {
+      let hash = CryptoJS.MD5(String(s)).toString();
+      cache.set(s, hash);
+      return hash;
+    }
+  };
+})();
+
+/**
+ * get/set Object using localStorage 
+ */
+const store = {
+  db: window.localStorage,
+  prefix: '__wx__',
+  set(key, value) {
+    this.db.setItem(this.prefix + key, JSON.stringify(value));
+  },
+
+  get(key) {
+    return JSON.parse(this.db.getItem(this.prefix + key));
+  },
+
+  has(key) {
+    return !!this.db.getItem(this.prefix + key);
+  },
+
+  keys() {
+    let prefix = this.prefix;
+    return Object.keys(this.db)
+      .filter(k => k.indexOf(prefix) === 0)
+      .map(k => k.slice(prefix.length));
+  }
+};
+
+// http://www.zcfy.cc/static/js/article.js?v=8d1f3.js
+const generateMdText = content => {
+  return toMarkdown(content, {
+    gfm: false,
+    converters: [{
+      filter: 'code',
+      replacement: function (t, n) {
+        return /\n/.test(t) ? t : '`' + t + '`';
+      }
+    }, {
+      filter: 'pre',
+      replacement: function (t, n) {
+        let lang = '';
+        let result = t;
+
+        let firstChild = n.children[0];
+        if (firstChild) {
+          let match = firstChild.className.match(/(^|\s)lang-([^\s]+)/);
+          lang = match && match[2] || '';
+        }
+
+        switch (lang) {
+          case 'js':
+          case 'javascript':
+            result = js_beautify(t);
+            break;
+          case 'css':
+            result = css_beautify(t);
+            break;
+          case 'html':
+            result = html_beautify(t);
+            break;
+        }
+
+        return '\n```' + lang + '\n' + result + '\n```\n'
+      }
+    }, {
+      filter: 'span',
+      replacement: function (t, n) {
+        return t
+      }
+    }, {
+      filter: ['section', 'div'],
+      replacement: function (t, n) {
+        return '\n\n' + t + '\n\n'
+      }
+    }]
+  });
+};
+
+/**
  * dispatch event
  */
 const dispatch = (elem, name) => {
@@ -27,6 +120,7 @@ const copy = (element) => {
   document.execCommand('copy');
   selection.removeAllRanges();
 };
+
 /**
  * paste
  */
@@ -58,36 +152,6 @@ const blobToDataURI = (blob) => new Promise((resolve, reject) => {
   reader.readAsDataURL(blob);
   reader.onload = (e) => resolve(e.target.result);
 });
-
-/**
- * weixin API has a limit of 2M for pictures
- * 
- * TODO
- * 1. error handling with large GIFs
- * 2. SVGs
- * 3. weixin API does not support WebP 
- */
-const checkAndReduceBlob = (blob) => {
-  let type = blob.type;
-  if (blob.size < 2 * 1024 * 1024) {
-    if (/^image\/(png|jpg|jpeg|gif)$/.test(type)) {
-      return blob;
-    }
-  }
-
-  // TODO
-  // large GIFs
-  // if (type === 'image/gif') {
-  //   return 
-  // }
-
-  // still remains for some test cases
-  return window.imgReduce(blob, {
-    scale: 0.8,
-    quality: 0.9,
-    type: blob.type
-  }).then(checkAndReduceBlob);
-};
 
 /**
  * https://zhitu.isux.us/

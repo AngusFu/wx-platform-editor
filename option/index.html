@@ -4,30 +4,50 @@
   <meta charset="utf-8"/>
   <title>Wechat Editor</title>
   <link rel="stylesheet" href="./styles/index.css">
-  <link rel="stylesheet" href="./styles/prism-tomorrow.css" id="prismTheme">
+  <link rel="stylesheet" href="./styles/prism-okaidia.css" id="prismTheme">
 </head>
 <body>
   <div class="container">
-    <div class="md-editor" contenteditable></div>
+    <div class="md-editor" id="jsMdEditor" contenteditable></div>
     <div class="md-preview"></div>
-    <!--<form class="md-config" id="themeControl">
-      <label><input type="radio" name="theme" value="">default</label>
-      <label><input type="radio" name="theme" value="dark">dark</label>
-      <label><input type="radio" name="theme" value="funky">funky</label>
-      <label><input type="radio" name="theme" value="okaidia">okaidia</label>
-      <label><input type="radio" name="theme" value="solarizedlight">solarizedlight</label>
-      <label><input type="radio" name="theme" value="tomorrow" checked>tomorrow</label>
-      <label><input type="radio" name="theme" value="twilight">twilight</label>
-    </form>-->
-    <a href="#" class="change-theme clip-btn" id="jsChangeTheme" title="代码样式">代码样式</a>
-    <button class="clip-btn" id="jsCopy"><img class="clippy" width="13" src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjEwMjQiIHdpZHRoPSI4OTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTEyOCA3NjhoMjU2djY0SDEyOHYtNjR6IG0zMjAtMzg0SDEyOHY2NGgzMjB2LTY0eiBtMTI4IDE5MlY0NDhMMzg0IDY0MGwxOTIgMTkyVjcwNGgzMjBWNTc2SDU3NnogbS0yODgtNjRIMTI4djY0aDE2MHYtNjR6TTEyOCA3MDRoMTYwdi02NEgxMjh2NjR6IG01NzYgNjRoNjR2MTI4Yy0xIDE4LTcgMzMtMTkgNDVzLTI3IDE4LTQ1IDE5SDY0Yy0zNSAwLTY0LTI5LTY0LTY0VjE5MmMwLTM1IDI5LTY0IDY0LTY0aDE5MkMyNTYgNTcgMzEzIDAgMzg0IDBzMTI4IDU3IDEyOCAxMjhoMTkyYzM1IDAgNjQgMjkgNjQgNjR2MzIwaC02NFYzMjBINjR2NTc2aDY0MFY3Njh6TTEyOCAyNTZoNTEyYzAtMzUtMjktNjQtNjQtNjRoLTY0Yy0zNSAwLTY0LTI5LTY0LTY0cy0yOS02NC02NC02NC02NCAyOS02NCA2NC0yOSA2NC02NCA2NGgtNjRjLTM1IDAtNjQgMjktNjQgNjR6IiAvPjwvc3ZnPg==" alt="Copy to clipboard"></button>
+    <div class="article-meta">
+      作者：<input type="text" class="meta-author" id="authorName">&nbsp;&nbsp;
+      文章地址：<input type="text" class="meta-url" id="articleURL">
+    </div>
+
+    <div class="btn-icons">
+      <a href="#" id="jsNewBtn">
+        <svg viewBox="0 0 1024 1024" width="32" height="32"><path d="M773.888 0h-523.776c-138.113 0-250.112 112.001-250.112 250.112v523.776c0 138.113 112.001 250.112 250.112 250.112h523.776c138.113 0 250.112-112.001 250.112-250.112v-523.776c0-138.113-112.001-250.112-250.112-250.112zM152.767 212.99h175.489c-4.352-10.816-14.145-29.249-29.249-55.297-4.352-6.464-7.616-11.84-9.728-16.257l48.766-22.72c21.633 34.687 37.888 62.849 48.766 84.48l-22.784 9.793h159.232v51.967h-370.495v-51.967zM305.472 362.497l-48.709 32.45c-4.416-6.464-9.793-14.016-16.257-22.72-10.879-21.631-25.982-45.504-45.504-71.486l42.24-29.247c6.531 8.704 17.344 23.87 32.513 45.504 15.104 19.456 27.139 34.687 35.711 45.504zM129.984 398.206h227.52c34.624-49.793 60.608-92.034 78.016-126.72l58.495 32.513c-26.050 32.45-50.881 63.935-74.752 94.208h123.521v48.766h-412.802v-48.766zM129.984 784.96c28.097-47.617 55.232-100.732 81.279-159.232l51.967 25.986c-4.352 8.765-10.879 21.757-19.522 38.973-28.095 56.384-48.77 95.359-61.758 116.992-30.337-12.992-47.552-20.48-51.969-22.72zM367.233 794.687c2.112 54.145-29.249 81.279-94.273 81.279-25.982 0-46.655 0-61.761 0-2.112-17.344-5.374-36.866-9.728-58.495 10.879 2.112 34.624 3.263 71.491 3.263 25.982 0 38.973-12.992 38.973-38.973v-188.542h-162.43v-51.969h162.497v-74.752h55.232v74.752h156.031v51.969h-156.031v201.473zM390.015 661.441l45.504-32.513c23.876 28.223 49.852 65.023 78.016 110.529l-48.766 35.776c-23.876-41.152-48.766-79.040-74.752-113.791zM913.279 479.487h-113.728v406.207h-58.495v-406.207h-113.791v25.982c4.352 164.735-34.624 292.481-116.992 383.489-12.992-15.104-27.133-31.361-42.24-48.77 69.376-71.486 102.847-185.28 100.732-341.248v-311.999c101.888 0 202.626-10.816 302.27-32.513l19.517 61.761c-73.601 10.879-161.344 19.517-263.232 25.982v185.28h286.016v52.029z" fill="#c1baba"></path></svg>
+      </a>
+      <a href="#" id="jsWxInjectBtn">
+        <svg viewBox="0 0 1024 1024" width="32" height="32"><defs><style type="text/css"></style></defs><path d="M578.634962 511.602611c-11.506227 0-23.030517 10.693385-23.030517 23.843359 0 10.693385 11.52429 21.404833 23.030517 21.404833 17.286435 0 29.64163-10.711448 29.64163-21.404833C608.276592 522.295996 595.921397 511.602611 578.634962 511.602611L578.634962 511.602611 578.634962 511.602611zM502.950362 400.514235c18.099277 0 29.623567-11.52429 29.623567-28.810725 0-18.099277-11.52429-28.792662-29.623567-28.792662-17.268372 0-33.741965 10.693385-33.741965 28.792662C469.208397 388.989945 485.68199 400.514235 502.950362 400.514235L502.950362 400.514235 502.950362 400.514235zM512 6.972376c-278.913106 0-505.027624 226.132581-505.027624 505.045687s226.114518 505.027624 505.027624 505.027624 505.045687-226.114518 505.045687-505.027624S790.913106 6.972376 512 6.972376L512 6.972376 512 6.972376zM416.554313 639.959358c-30.454472 0-52.654084-4.913177-81.464809-13.168037l-83.108555 41.960699 23.861422-70.771424c-58.416229-41.129794-92.989099-92.971035-92.989099-156.336567 0-111.901217 105.32623-197.484424 233.701041-197.484424 113.544964 0 214.770859 67.465867 234.513883 162.94768-8.236797-1.66181-15.642688-2.492715-22.217675-2.492715-111.901217 0-198.315329 83.921397-198.315329 185.147292 0 17.286435 2.474652 32.91106 6.574987 49.36659C430.535191 639.959358 423.1293 639.959358 416.554313 639.959358L416.554313 639.959358 416.554313 639.959358zM759.681919 720.611325l16.45553 59.22907-62.534627-35.367649c-23.861422 4.913177-46.910002 12.337132-70.771424 12.337132-110.25747 0-197.484424-75.6846-197.484424-169.504604s87.20889-169.504604 197.484424-169.504604c104.495325 0 198.315329 75.6846 198.315329 169.504604C841.128665 639.959358 805.742953 686.851297 759.681919 720.611325L759.681919 720.611325 759.681919 720.611325zM340.020744 342.910848c-17.286435 0-35.385712 10.693385-35.385712 28.792662 0 17.286435 18.099277 28.810725 35.385712 28.810725 16.45553 0 29.623567-11.52429 29.623567-28.810725C369.644311 353.604234 356.476274 342.910848 340.020744 342.910848L340.020744 342.910848 340.020744 342.910848zM707.840677 511.602611c-12.355195 0-23.030517 10.693385-23.030517 23.843359 0 10.693385 10.693385 21.404833 23.030517 21.404833 16.45553 0 28.810725-10.711448 28.810725-21.404833C736.633339 522.295996 724.296207 511.602611 707.840677 511.602611L707.840677 511.602611 707.840677 511.602611zM707.840677 511.602611" fill="#c1baba"></path></svg>
+      </a>
+    </div>
   </div>
+
+  <div class="pop-mask">
+    <div class="pop-content">
+      <input type="text" id="jsURL" class="url-input" placeholder="请输入文章地址" autofocus>
+      <div class="error-tip">
+        请输入正确格式的 url
+      </div>
+      <a class="submit-btn" href="#">确认抓取</a>
+    </div>
+  </div>
+
   <script src="./scripts/prism.all.js"></script>
   <script src="./scripts/marked.min.js"></script>
+  <script src="./scripts/to-markdown.js"></script>
   <script src="./scripts/md5.js"></script>
   <script src="./scripts/imgReduce.js"></script>
+
+  <script src="./scripts/beautify.js"></script>
+  <script src="./scripts/beautify-css.js"></script>
+  <script src="./scripts/beautify-html.js"></script>
+
   <script src="./scripts/common.js"></script>
   <script src="./scripts/editor.js"></script>
+  <script src="./scripts/getContent.js"></script>
   <script src="./scripts/index.js"></script>
 </body>
 </html>

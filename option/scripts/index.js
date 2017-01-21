@@ -22,6 +22,20 @@ const sendMsg = (url, msg) => new Promise((resolve, reject) => {
 const WX_PATTERN = 'https://mp.weixin.qq.com/cgi-bin/appmsg?t=media/appmsg_edit*';
 
 /**
+ * error warning images
+ */
+const ERROR_IMAGES = {
+  gif: {
+    cdn_url: 'https://mmbiz.qlogo.cn/mmbiz_png/wic3OZ3sEjfwAGmvH7C0ROMb9aAfjvickkJI3TurmjVUd20tGB8fd1kgddYI45OkvcrZlvnu4vAjkS0ibSiafHco5g/0?wx_fmt=png',
+    cdn_id: 515897144
+  },
+  svg: {
+    cdn_url: 'https://mmbiz.qlogo.cn/mmbiz_png/wic3OZ3sEjfwAGmvH7C0ROMb9aAfjvickkfIVWBgj34x3hIV71YeDr9S8qCHPZquiaIm5db4jcI4s379QcSyCfAsA/0?wx_fmt=png',
+    cdn_id: 515897145
+  }
+};
+
+/**
  * no weixin editor tab is opened
  */
 const wxPageNotFound = function () {
@@ -52,46 +66,39 @@ const divWrap = (clipData) => {
 };
 
 /**
- * md5
+ * fix
  */
-const md5 = (function () {
-  let cache = new Map();
-
-  return (s) => {
-    if (cache.has(s)) {
-      return cache.get(s);
-    } else {
-      let hash = CryptoJS.MD5(String(s)).toString();
-      cache.set(s, hash);
-      return hash;
-    }
-  };
-})();
+const fixSVGBase64 = (img) => {
+  if (/^data:image\/svg/.test(img.src)) {
+    img.src = ERROR_IMAGES.svg.cdn_url;
+  }
+  return img;
+};
 
 /**
- * get/set Object using localStorage 
+ * weixin API has a limit of 2M for pictures
  */
-const store = {
-  db: window.localStorage,
-  prefix: '__wx__',
-  set(key, value) {
-    this.db.setItem(this.prefix + key, JSON.stringify(value));
-  },
-
-  get(key) {
-    return JSON.parse(this.db.getItem(this.prefix + key));
-  },
-
-  has(key) {
-    return !!this.db.getItem(this.prefix + key);
-  },
-
-  keys() {
-    let prefix = this.prefix;
-    return Object.keys(this.db)
-      .filter(k => k.indexOf(prefix) === 0)
-      .map(k => k.slice(prefix.length));
+const checkAndReduceBlob = (blob) => {
+  let type = blob.type;
+  if (blob.size < 2 * 1024 * 1024) {
+    if (/^image\/(png|jpg|jpeg|gif)$/.test(type)) {
+      return blob;
+    }
   }
+
+  // SVGs, WebPs & large GIFs will also do the work
+  // we'll deal with this in wexin editor's injected script
+  let match = type.match(/^image\/(svg|gif|webp)/);
+  if (match) {
+    return blob;
+  }
+
+  // still remains for some test cases
+  return window.imgReduce(blob, {
+    scale: 0.8,
+    quality: 0.9,
+    type: blob.type
+  }).then(checkAndReduceBlob);
 };
 
 /**
@@ -100,7 +107,11 @@ const store = {
 const requestUpload = (url) => {
   let hash = md5(url);
 
-  if (/^data:image/.test(url)) {
+  // DataURIs
+  // normal pics that can be reduced 
+  // using canvas etc.
+  // we'll deal with arge gif later
+  if (/^image\/$/.test(url)) {
     sendMsg(WX_PATTERN, {
       type: 'upload',
       data: url,
@@ -140,21 +151,105 @@ const waitUploadDone = (identifier) => new Promise(resolve => {
 });
 
 // ===================================================================
-/**
- * copy html
- * then trigger paste event
- */
-document.querySelector('#jsCopy').addEventListener('click', () => {
-  copy(getDOM('.md-preview'));
-  paste();
-}, false);
+
+let editorDOM  = getDOM('.md-editor');
+let previewDOM = getDOM('.md-preview');
+let authorDOM  = getDOM('#authorName');
+let urlDOM     = getDOM('#articleURL');
+
+let maskDOM    = getDOM('.pop-mask');
+let inputDOM   = getDOM('#jsURL');
+let tipDOM     = getDOM('.error-tip');
+let submitDOM  = getDOM('.submit-btn');
+let HTTP_REGEX = /^https?\:\/\/[^\.]+\..+/;
 
 /**
- * listen for paste event
+ * validation
+ */
+inputDOM.addEventListener('keyup', function (e) {
+  let url = this.value.trim();
+
+  if (url && !HTTP_REGEX.test(url)) {
+    tipDOM.innerHTML = '请输入正确格式的 url';
+    tipDOM.style.display = 'block';
+  } else {
+    tipDOM.style.display = 'none';
+  }
+});
+
+/**
+ * fetch content
+ */
+submitDOM.addEventListener('click', function (e) {
+  let url = inputDOM.value.trim();
+
+  if (!HTTP_REGEX.test(url)) {
+    if (url) {
+      tipDOM.innerHTML = '请输入正确格式的 url';
+      tipDOM.style.display = 'block';
+    }
+    return;
+  }
+
+  tipDOM.innerHTML = '正在抓取中...请稍后....';
+  tipDOM.style.display = 'block';
+  inputDOM.setAttribute('readonly', true);
+  
+  // cache url
+  store.set('url_last_time', url);
+
+  getMarkdownContent(url).then(o => {
+    if (!o) {
+      tipDOM.innerHTML = '抱歉，无法抓取该 url 对应的内容';
+      tipDOM.style.display = 'block';
+      return;
+    }
+    // fill editor
+    // and trigger input event
+    editorDOM.innerHTML = o.content
+      .replace(/\n\r?/g, '<br>')
+      .replace(/ /g, '&nbsp;');
+    authorDOM.value = o.author;
+    urlDOM.value = o.url;
+
+    dispatch(editorDOM, 'input');
+    // hide mask
+    maskDOM.style.display = 'none';
+  })
+  .catch(e => {
+    console.error(e);
+    maskDOM.style.display = 'block';
+    tipDOM.style.display  = 'block';
+    tipDOM.innerHTML = '似乎发生了错误，请检查控制台';
+    inputDOM.removeAttribute('readonly');
+  });
+});
+
+/**
+ * wxInject
+ */
+getDOM('#jsWxInjectBtn').addEventListener('click', (e) => {
+  // copy
+  copy(previewDOM);
+  paste();
+});
+
+/**
+ * reset
+ */
+getDOM('#jsNewBtn').addEventListener('click', (e) => {
+  // location.reload();
+  inputDOM.removeAttribute('readonly');
+  tipDOM.style.display  = 'none';
+  maskDOM.style.display = 'block';
+  inputDOM.focus();
+  inputDOM.select();
+});
+
+/**
+ * listen for paste event on helper textarea
  * 
- * TODO
- * 1. Inline SVGs
- * 2. see common.js, `checkAndReduceBlob`
+ * TODO: deal with Inline SVGs
  */
 document.addEventListener('paste', (e) => {
   // event target must be helper textarea
@@ -169,10 +264,21 @@ document.addEventListener('paste', (e) => {
   // wrap html into a div
   let divDOM = divWrap(e.clipboardData.getData('text/html'));
 
+  // remove `meta`
+  getAll('meta', divDOM).forEach(el => el.remove());
+
+  // TODO: fix this
+  // ERROR
+  let domPreview = getAll('.md-preview', divDOM)[0];
+  if (domPreview) {
+    divDOM = domPreview;
+  }
+
   // get image sources
   // but pics from weixn CDN excluded
   // also, cached pics excluded
   let imgsSrc = getAll('img', divDOM)
+    .map (fixSVGBase64)
     .map(img => img.src)
     .filter(src => !CDN_REG.test(src))
     .filter(src => !store.has(md5(src)));
@@ -187,7 +293,7 @@ document.addEventListener('paste', (e) => {
     .then(waitUploadDone)
     .then(({ type, hash, data, err }) => {
       if (err) {
-        console.err(err);
+        console.error(err);
         return;
       }
       // cache data
@@ -198,9 +304,8 @@ document.addEventListener('paste', (e) => {
   // replace url
   Promise.all(promises).then(() => {
     store.keys().forEach(hash => {
-      let data = store.get(hash);
-      getAll(`.hash_${hash}`, divDOM)
-        .map(img => img.src = data.cdn_url);
+      let { cdn_url } = store.get(hash);
+      getAll(`.hash_${hash}`, divDOM).forEach(img => img.src = cdn_url);
     });
     
     // inject
@@ -211,7 +316,9 @@ document.addEventListener('paste', (e) => {
 });
 
 (function init() {
+  // recover cache url
+  inputDOM.value = store.get('url_last_time');
+
   sendMsg(WX_PATTERN, { type: 'shakehands' }).catch(wxPageNotFound);
   chrome.runtime.onMessage.addListener(i => log(i));
 }());
-

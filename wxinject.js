@@ -139,7 +139,7 @@ const uploadImage = (function () {
     return new Promise(function (resolve, reject) {
 
       if (file.size > 2 * 1024 * 1024) {
-        alert('图片大于 2M 请压缩后上传，或使用公众号平台上传！')
+        console.error('图片大于 2M 请压缩后上传，或使用公众号平台上传！');
         reject();
         return;
       }
@@ -160,6 +160,19 @@ const uploadImage = (function () {
   };
 })();
 
+/**
+ * error warning images
+ */
+const ERROR_IMAGES = {
+  gif: {
+    cdn_url: 'https://mmbiz.qlogo.cn/mmbiz_png/wic3OZ3sEjfwAGmvH7C0ROMb9aAfjvickkJI3TurmjVUd20tGB8fd1kgddYI45OkvcrZlvnu4vAjkS0ibSiafHco5g/0?wx_fmt=png',
+    cdn_id: 515897144
+  },
+  svg: {
+    cdn_url: 'https://mmbiz.qlogo.cn/mmbiz_png/wic3OZ3sEjfwAGmvH7C0ROMb9aAfjvickkfIVWBgj34x3hIV71YeDr9S8qCHPZquiaIm5db4jcI4s379QcSyCfAsA/0?wx_fmt=png',
+    cdn_id: 515897145
+  }
+};
 
 const onMessage = {
   noop() {},
@@ -177,6 +190,7 @@ const onMessage = {
   },
 
   upload(message) {
+    // TODO: fix unsupported types and large pics
     uploadImage(message.data)
       .then(res => JSON.parse(res))
       .then(data => {

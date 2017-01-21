@@ -1,8 +1,7 @@
 // 将设置放入此文件中以覆盖默认设置
 {
-  "editor.fontFamily": "Consolas",
   "editor.insertSpaces": true,
-  "editor.fontSize": 24,
+  "editor.fontSize": 18,
   "editor.wrappingColumn": 100,
   "editor.mouseWheelScrollSensitivity": 2,
   "editor.renderWhitespace": "all",
