@@ -48,64 +48,14 @@ const store = {
   }
 };
 
-// http://www.zcfy.cc/static/js/article.js?v=8d1f3.js
-const generateMdText = content => {
-  return toMarkdown(content, {
-    gfm: false,
-    converters: [{
-      filter: 'code',
-      replacement: function (t, n) {
-        return /\n/.test(t) ? t : '`' + t + '`';
-      }
-    }, {
-      filter: 'pre',
-      replacement: function (t, n) {
-        let lang = '';
-        let result = t;
-
-        let firstChild = n.children[0];
-        if (firstChild) {
-          let match = firstChild.className.match(/(^|\s)lang-([^\s]+)/);
-          lang = match && match[2] || '';
-        }
-
-        switch (lang) {
-          case 'js':
-          case 'javascript':
-            result = js_beautify(t);
-            break;
-          case 'css':
-            result = css_beautify(t);
-            break;
-          case 'html':
-            result = html_beautify(t);
-            break;
-        }
-
-        return '\n```' + lang + '\n' + result + '\n```\n'
-      }
-    }, {
-      filter: 'span',
-      replacement: function (t, n) {
-        return t
-      }
-    }, {
-      filter: ['section', 'div'],
-      replacement: function (t, n) {
-        return '\n\n' + t + '\n\n'
-      }
-    }]
-  });
-};
-
 /**
  * dispatch event
  */
-const dispatch = (elem, name) => {
-  let evt = document.createEvent('HTMLEvents');
-  evt.initEvent(name, false, false);
-  elem.dispatchEvent(evt);
-};
+// const dispatch = (elem, name) => {
+//   let evt = document.createEvent('HTMLEvents');
+//   evt.initEvent(name, false, false);
+//   elem.dispatchEvent(evt);
+// };
 
 /**
  * copy text
@@ -115,7 +65,9 @@ const copy = (element) => {
   range.selectNode(element);
 
   let selection = window.getSelection();
-  if (selection.rangeCount > 0) selection.removeAllRanges();
+  if (selection.rangeCount > 0) {
+    selection.removeAllRanges()
+  }
   selection.addRange(range);
   document.execCommand('copy');
   selection.removeAllRanges();

@@ -16,12 +16,10 @@
         "\u003Call_urls\u003E"
     ],
     "browser_action": {
-        "default_icon": "./img/wechat_128.png"
+        "default_icon": "./img/wechat.png"
     },
     "icons": {
-        "32": "./img/wechat_32.png",
-        "64": "./img/wechat_64.png",
-        "128": "./img/wechat_128.png"
+        "128": "./img/wechat.png"
     },
     "content_scripts": [{
         "run_at": "document_end",

@@ -3,6 +3,8 @@
  */
 const zcfyRegex = /^https?:\/\/(www\.)?zcfy\.cc\/(article|api)\//;
 const isZcfyURL = url => zcfyRegex.test(url);
+const wemlionRegex = /^https?:\/\/www\.wemlion\.com\/\d{4}\/([^\/]+)/;
+const isWemlionURL = url => wemlionRegex.test(url);
 
 /**
  * 如果可以匹配到相应的 markdown 地址
@@ -47,6 +49,24 @@ const zcfyMarkdownParse = md => {
 };
 
 /**
+ * wemlion.com parse
+ */
+const wemlionFetch = url => {
+  let name = url.match(wemlionRegex)[1];
+  let md_url = `https://raw.githubusercontent.com/AngusFu/blog/master/source/_posts/${name}.md`;
+  
+  return fetch(md_url)
+    .then(r => r.text())
+    .then(md => {
+      let title = md.match(/title:\s*([^\n\r]+)/)[1];
+      let isTranslation = /from:\s*http/.test(md) && /permission:\s*(0|1)/.test(md);
+      let author = isTranslation ? '译/文蔺' : '文蔺';
+      let content = md.match(/-{3,}\n\s*([\w\W]+)/)[1];
+      return { title, author, content, url, type: 'md'};
+    });
+};
+
+/**
  * fetch content by postlight
  */
 const fetchByPostLight = url => {
@@ -68,6 +88,10 @@ const fetchByPostLight = url => {
  * deal with text contents
  */
 const getMarkdownContent = url => {
+  if (isWemlionURL(url)) {
+    return wemlionFetch(url);
+  }
+
   let config = {
     type: 'html',
     origUrl: url,
@@ -111,12 +135,3 @@ const getMarkdownContent = url => {
       };
     });
 };
-
-// let url = 'http://www.zcfy.cc/article/random-numbers-in-css-css-tricks-2407.html'
-// let url = 'https://www.h5jun.com/post/luckey-draw-in-5-minutes.html'
-// let url = 'http://www.zhangxinxu.com/wordpress/2016/11/css-text-decoration-underline-skip-override/'
-// getMarkdownContent(url).then(o => {
-//   let editorDOM = getDOM('.md-editor');
-//   editorDOM.innerText = o.content;
-//   dispatch(editorDOM, 'input');
-// });

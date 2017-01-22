@@ -1,9 +1,6 @@
 # wx-platform-editor
 
-## TODO
+Chrome 插件，一个简单的微信公众号编辑助手。
 
-- fix unsupported types and large pics, in `wxinject.js`
+可用于抓取博客，生成 Markdown 并注入一键注入到公众号编辑器。
 
-- inject author/url in option page
-
-- fix styling missing when injecting (font-size, color, etc.). this is cause by incorrect copying result

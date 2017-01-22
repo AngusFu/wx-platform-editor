@@ -1,33 +1,130 @@
-(function () {
-  const changePrismTheme = type => {
-    let url = '/option/styles/prism.css';
+;(function () {
+  let previewDOM = getDOM('.md-preview');
 
-    if (type) {
-      url = `/option/styles/prism-${type}.css`;
-    }
-    getDOM('#prismTheme').setAttribute('href', url);
+  /**
+   * configure window.marked
+   */
+  let configMarked = function () {
+    window.marked.setOptions({
+      highlight(code, lang, callback) {
+        lang = lang === 'js' ? 'javascript' : (lang || 'javascript');
+        let langConfig = Prism.languages[lang] || Prism.languages.javascript;
+        return Prism.highlight(code, langConfig);
+      }
+    });
   };
 
-  const eidtorDOM = getDOM('.md-editor');
-  const previewDOM = getDOM('.md-preview');
-  const offlineDIV = create('div');
-  const query = (s, cb) => getAll(s, offlineDIV).forEach(el => cb && cb(el));
-
-  window.marked.setOptions({
-    highlight(code, lang, callback) {
-      lang = lang === 'js' ? 'javascript' : (lang || 'javascript');
-      let langConfig = Prism.languages[lang] || Prism.languages.javascript;
-      return Prism.highlight(code, langConfig);
-    }
-  });
-  
   /**
-   * edit
+   * http://www.zcfy.cc/static/js/article.js?v=8d1f3.js
    */
-  eidtorDOM.addEventListener('input', function () {
-    let text = this.innerText;
-    offlineDIV.innerHTML = window.marked(text);
+  let generateMdText = content => {
+    return toMarkdown(content, {
+      gfm: false,
+      converters: [{
+        filter: 'code',
+        replacement: function (t, n) {
+          return /\n/.test(t) ? t : '`' + t + '`';
+        }
+      }, {
+        filter: 'pre',
+        replacement: function (t, n) {
+          let lang = '';
+          let result = t;
 
+          let firstChild = n.children[0];
+          if (firstChild) {
+            let match = firstChild.className.match(/(^|\s)(lang|language)-([^\s]+)/);
+            lang = match && match[3] || '';
+          }
+
+          switch (lang) {
+            case 'js':
+            case 'javascript':
+              result = js_beautify(t);
+              break;
+            case 'css':
+              result = css_beautify(t);
+              break;
+            case 'html':
+              result = html_beautify(t);
+              break;
+          }
+
+          return '\n```' + lang + '\n' + result + '\n```\n'
+        }
+      }, {
+        filter: 'span',
+        replacement: function (t, n) {
+          return t
+        }
+      }, {
+        filter: ['section', 'div'],
+        replacement: function (t, n) {
+          return '\n\n' + t + '\n\n'
+        }
+      }]
+    });
+  };
+
+  /**
+   * create editor
+   */
+  let initEditor = () => {
+    let editor = new Editor({
+      element: getDOM('#jsMdEditor')
+    });
+
+    configMarked();
+    
+    // TODO: this is not right
+    editor.insert = function (data) {
+      let cm = this.codemirror;
+      let doc = cm.getDoc();
+      // gets the line number in the cursor position
+      let cursor = doc.getCursor();
+      // get the line contents
+      let line = doc.getLine(cursor.line);
+      // create a new object to avoid mutation of the original selection
+      let pos = {
+          line: cursor.line,
+          ch: line.length - 1 
+      };
+      // set the character position to the end of the line
+      doc.replaceRange('\n'+data+'\n', pos); // adds a new line
+    };
+
+    editor.val = function (val) {
+      let cm = this.codemirror;
+      let doc = cm.getDoc();
+
+      if (!val) {
+        return doc.getValue();
+      } else {
+        return doc.setValue(val);
+      }
+    };
+
+    // on change
+    editor.codemirror.on('change', function (e) {
+      if (editor.onchange) {
+        editor.onchange(editor);
+      }
+    });
+
+    editor.render();
+    return editor;
+  };
+
+  /**
+   * renderPreview
+   */
+  let renderPreview = function (editor) {
+    let offlineDIV = create('div');
+    let query = (s, cb) => getAll(s, offlineDIV).forEach(el => cb && cb(el));
+    
+    let text = editor.val();
+    offlineDIV.innerHTML = window.marked(text);
+    
     // remove `meta`
     query('meta', a => a.remove());
 
@@ -101,20 +198,28 @@
     });
 
     previewDOM.innerHTML = offlineDIV.innerHTML;
-  });
+  };
+
+  
+/********************************************************************
+ *            
+ ********************************************************************/
+  // Editor
+  window.mdEditor = initEditor();
+  mdEditor.onchange = renderPreview;
 
   /**
    * paste
    * http://www.zcfy.cc/static/js/article.js?v=8d1f3.js
    */
-  eidtorDOM.addEventListener('paste', function (e) {
+  getDOM('.md-editor').addEventListener('paste', function (e) {
     e.preventDefault();
     
     let data = e.clipboardData.getData('text/html')
-    let html = '';
+    let markdown = '';
 
     if (!data) {
-      html = e.clipboardData.getData('text/plain');
+      markdown = e.clipboardData.getData('text/plain');
     } else {
       let divDOM = create('div');
       let query = (s, cb) => getAll(s, divDOM).forEach(el => cb && cb(el));
@@ -124,50 +229,12 @@
         el.removeAttribute('style');
         el.removeAttribute('class');
       });
-
       query('meta', el => el.remove());
       
-      html = generateMdText(divDOM.innerHTML.replace(/ /g, '&nbsp;'));
+      markdown = generateMdText(divDOM.innerHTML);
     }
 
-    this.innerText = html;
-    dispatch(this, 'input');
+    // TODO: this is wrong 
+    window.mdEditor.insert(markdown);
   });
-
-  /**
-   * change code theme
-   */
-  let themeDOM = getDOM('#jsChangeTheme');
-  if (themeDOM) {
-    let themes = 'default|funky|okaidia|solarizedlight|tomorrow|twilight'.split('|');
-    let themesLen = themes.length;
-    let currentThemeIndex = -1;
-    themeDOM.addEventListener('click', e => {
-      currentThemeIndex += 1;
-      let type = themes[currentThemeIndex % themesLen];
-      type = type === 'default' ? '' : type;
-      changePrismTheme(type);
-    });
-  }
-
-  /**
-   * history
-   */
-  // eidtorDOM.addEventListener('blur', e => {
-  //   try {
-  //     localStorage['wx-editor'] = eidtorDOM.innerHTML;
-  //   } catch (e) {
-  //     console.error(e);
-  //   }
-  // });
-  // eidtorDOM.innerHTML = localStorage['wx-editor'] || '';
-  // dispatch(eidtorDOM, 'input');
-
-  // for online HTTP(s) version
-  if (/^https?:$/.test(location.protocol)) {
-    // add clip 
-    getDOM('#jsCopy').addEventListener('click', function() {
-      copy(previewDOM);
-    });
-  }
 })();

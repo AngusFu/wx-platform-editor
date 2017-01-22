@@ -1,8 +1,9 @@
 /**
  * basic utils
  */
-const qsa = (sel) => Array.from(document.querySelectorAll(sel));
-const isVisible = (el) => {
+const qs  = sel => document.querySelector(sel);
+const qsa = sel => Array.from(document.querySelectorAll(sel));
+const isVisible = el => {
   let rect = el.getBoundingClientRect();
   return rect.width > 0 && rect.height > 0;
 };
@@ -113,9 +114,10 @@ const uploadImage = (function () {
     var xhr = new XMLHttpRequest();
     var form = new FormData();
     var blob = dataURItoBlob(base64);
-
     var fileType = blob.type;
-    var fileName = guid() + '.' + fileType.replace('image/', '');
+    var MimeStriped = fileType.replace('image/', '');
+    var fileExt = MimeStriped === 'svg+xml' ? 'svg' : MimeStriped;
+    var fileName = guid() + '.' + fileExt;
 
     // 直接上传 Blob 对象不可以
     // 修改不了 filename 属性
@@ -129,28 +131,33 @@ const uploadImage = (function () {
       type: fileType,
       lastModified: getRandomDate()
     });
-
-    form.append('id', 'WU_FILE_0');
-    form.append('name', fileName);
-    form.append('type', fileType);
-    form.append('lastModifiedDate', file.lastModifiedDate);
-    form.append('size', file.size);
-    form.append('file', file);
+    var fileSize = file.size;
+    
     return new Promise(function (resolve, reject) {
-
-      if (file.size > 2 * 1024 * 1024) {
-        console.error('图片大于 2M 请压缩后上传，或使用公众号平台上传！');
-        reject();
+      if (!/jpeg|png|gif/i.test(fileExt)) {
+        resolve(JSON.stringify(ERROR_IMAGES[fileExt] || ERROR_IMAGES['typeError']));
+        return;
+      } else if (fileSize >= 2 * 1024 * 1024) {
+        resolve(JSON.stringify(
+          ERROR_IMAGES[fileExt === 'gif' ? 'gif' : 'sizeError']
+        ));
         return;
       }
+
+      form.append('id', 'WU_FILE_0');
+      form.append('name', fileName);
+      form.append('type', fileType);
+      form.append('lastModifiedDate', file.lastModifiedDate);
+      form.append('size', fileSize);
+      form.append('file', file);
 
       xhr.onreadystatechange = function () {
         if (!/^2\d{2}$/.test(xhr.status) || xhr.readyState < 4) return;
         resolve(xhr.response);
       };
 
-      xhr.onerror = xhr.ontimeout = function () {
-        reject();
+      xhr.onerror = xhr.ontimeout = function (e) {
+        reject(e);
       };
 
       xhr.open('POST', url);
@@ -166,11 +173,28 @@ const uploadImage = (function () {
 const ERROR_IMAGES = {
   gif: {
     cdn_url: 'https://mmbiz.qlogo.cn/mmbiz_png/wic3OZ3sEjfwAGmvH7C0ROMb9aAfjvickkJI3TurmjVUd20tGB8fd1kgddYI45OkvcrZlvnu4vAjkS0ibSiafHco5g/0?wx_fmt=png',
-    cdn_id: 515897144
+    cdn_id: 515897144,
+    is_placeholder: true
   },
   svg: {
     cdn_url: 'https://mmbiz.qlogo.cn/mmbiz_png/wic3OZ3sEjfwAGmvH7C0ROMb9aAfjvickkfIVWBgj34x3hIV71YeDr9S8qCHPZquiaIm5db4jcI4s379QcSyCfAsA/0?wx_fmt=png',
-    cdn_id: 515897145
+    cdn_id: 515897145,
+    is_placeholder: true
+  },
+  webp: {
+    cdn_url: 'https://mmbiz.qlogo.cn/mmbiz_png/wic3OZ3sEjfyrMXEzibBfqZsMhpl1aoibcK5SJ6Aib3exfj1v0UgNrXUvpibU0dwyESN3uHda5PGRwIRnxL8tA8FqSQ/0?wx_fmt=png',
+    cdn_id: 515897167,
+    is_placeholder: true
+  },
+  sizeError: {
+    cdn_url: 'https://mmbiz.qlogo.cn/mmbiz_png/wic3OZ3sEjfyrMXEzibBfqZsMhpl1aoibcKj4Cvx37S18WjHrvS8TP4eybIhkdr07B3jzsQbeWUia9hIulnUeNDXSQ/0?wx_fmt=png',
+    cdn_id: 515897166,
+    is_placeholder: true
+  },
+  typeError: {
+    cdn_url: 'https://mmbiz.qlogo.cn/mmbiz_png/wic3OZ3sEjfyrMXEzibBfqZsMhpl1aoibcKE20R9gsYOuiaz5AZ1ezUbT7iaIuliawQowL0Dibj3ElvJr70K6Q1ChyicdA/0?wx_fmt=png',
+    cdn_id: 515897169,
+    is_placeholder: true
   }
 };
 
@@ -185,8 +209,25 @@ const onMessage = {
   },
 
   inject(message) {
+    // hide editor "placeholder"
+    qs('.editor_content_placeholder ').style.display = 'none';
+
     let editor = getWxEditor();
     editor.innerHTML = message.data;
+
+    // author
+    qs('#author').value = message.author.slice(0, 8);
+    // url
+    if (!qs('.js_url_checkbox').checked) {
+      qs('.js_url_checkbox').click();
+    }
+    qs('.js_url').value = message.url;
+
+    // TODO: all done in option.html
+    // title
+    // qs('#title').value 
+    //   = qs('.cover_appmsg_item .appmsg_title .js_appmsg_title').innerHTML
+    //   = message.title.slice(0, 64);
   },
 
   upload(message) {
@@ -201,6 +242,7 @@ const onMessage = {
 
         if (data && data['cdn_url']) {
           msg.data = {
+            is_placeholder: data['is_placeholder'],
             cdn_url: data['cdn_url'],
             cdn_id : data['content']
           };
