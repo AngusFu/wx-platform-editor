@@ -8,7 +8,6 @@
   "editor.renderIndentGuides": true,
   "editor.renderControlCharacters": true,
   "editor.tabSize": 2,
-  "typescript.tsdk": "C:/Users/fujun-iri/AppData/Roaming/npm/node_modules/typescript/lib",
   "typescript.check.tscVersion": false,
   "emmet.preferences": {
     "css.autoInsertVendorPrefixes": false,

@@ -58,8 +58,8 @@ const wemlionFetch = url => {
   return fetch(md_url)
     .then(r => r.text())
     .then(md => {
-      let title = md.match(/title:\s*([^\n\r]+)/)[1];
-      let isTranslation = /from:\s*http/.test(md) && /permission:\s*(0|1)/.test(md);
+      let title = md.match(/title:\s*['"]?([^\n\r"']+)/)[1];
+      let isTranslation = /from:\s*['"]?http/.test(md) && /permission:\s*(0|1)/.test(md);
       let author = isTranslation ? '译/文蔺' : '文蔺';
       let content = md.match(/-{3,}\n\s*([\w\W]+)/)[1];
       return { title, author, content, url, type: 'md'};
