@@ -17,6 +17,7 @@
     <div class="btns">
       <a href="#" id="jsChangeTheme" title="切换代码样式">Code Style</a>
       <a href="#" id="jsNewBtn" title="重新选择文章">New</a>
+      <a href="#" id="jsWeekly" title="编辑奇舞周刊">Weekly</a>
       <a href="#" id="jsWxInjectBtn" title="注入到微信编辑器中">Inject</a>
     </div>
   </div>
@@ -36,6 +37,39 @@
       </div>
       <a class="submit-btn" href="#">确认抓取</a>
     </div>
+  </div>
+
+  <div class="pop-mask" style="display: block">
+    <form class="pop-content pop-form">
+      <div class="left-part">
+        <label for="number">期数</label>
+        <input type="number" id="number" placeholder="周刊期数" min="1">
+        <br>
+        <label for="author">作者</label>
+        <input type="text" id="author" placeholder="作者名称" value="文蔺">
+        <br>
+
+        <label for="imgurl">封面图</label>
+        <input type="file" id="imgcover" accept="image/*">
+        <input type="text" id="imgcoverurl" placeholder="请输入有效图片地址">
+
+        <label for="imgurl">动图</label>
+        <input type="file" id="imggif" accept="image/*">
+        <input type="text" id="imggifurl" placeholder="请输入有效图片地址">
+
+        <label for="gifCopy">动图作者</label>
+        <input type="text" id="gifCopy" placeholder="请输入动图作者">
+      </div>
+
+      <div class="right-part">
+        <label for="abstract">摘要</label>
+        <textarea id="abstract">周刊君如约而至~周末愉快~</textarea>
+        <br>
+
+        <label for="hello">欢迎语</label>
+        <textarea id="hello">哟嗬~ 又到周五啦~ 又一个周末即将来临，奇舞周刊如约而至。好开森~</textarea>
+      </div>
+    </form>
   </div>
 
   <script src="./lib/prism.all.js"></script>
