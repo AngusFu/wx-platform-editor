@@ -400,4 +400,8 @@ document.addEventListener('paste', (e) => {
   sendMsg(WX_PATTERN, { type: 'shakehands' }).catch(wxPageNotFound);
   // log messages
   chrome.runtime.onMessage.addListener(i => log(i));
+
+  // request demo
+  getMarkdownContent('http://www.zcfy.cc/article/the-service-worker-lifecycle-951.html')
+    .then(o => window.mdEditor.val(o.content));
 }());
