@@ -30,7 +30,7 @@ const zcfyURLFix = url => {
   } else if (match = url.match(r2)) {
     config.type = 'md';
     config.url = `http://www.zcfy.cc/api/getarticlemarkdown?id=${match[1]}`;
-  } else if (match = url.match(r4)) {
+  } else if (match = url.match(r3)) {
     config.type = 'md';
   }
   

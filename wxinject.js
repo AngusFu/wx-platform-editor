@@ -214,7 +214,6 @@ const onMessage = {
 
     let editor = getWxEditor();
     editor.innerHTML = message.data;
-    debugger;
     // author
     qs('#author').value = message.author.slice(0, 8);
     // url

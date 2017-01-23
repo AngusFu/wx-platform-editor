@@ -19,26 +19,40 @@
    */
   let initEditor = () => {
     let editor = new Editor({
-      element: getDOM('#jsMdEditor')
+      element: getDOM('#jsMdEditor'),
+      toolbar: []
     });
 
     configMarked();
     
-    // TODO: this is not right
+    // 添加新段落
+    // editor.insertParagraph = function (data) {
+    //   let cm = this.codemirror;
+    //   let doc = cm.getDoc();
+    //   // gets the line number in the cursor position
+    //   let cursor = doc.getCursor();
+    //   console.log(cursor)
+    //   // get the line contents
+    //   let line = doc.getLine(cursor.line);
+    //   // create a new object to avoid mutation of the original selection
+    //   let pos = {
+    //       line: cursor.line,
+    //       ch: line.length - 1 
+    //   };
+    //   // set the character position to the end of the line
+    //   doc.replaceRange('\n'+data+'\n', pos); // adds a new line
+    // };
+
     editor.insert = function (data) {
       let cm = this.codemirror;
       let doc = cm.getDoc();
-      // gets the line number in the cursor position
       let cursor = doc.getCursor();
-      // get the line contents
-      let line = doc.getLine(cursor.line);
-      // create a new object to avoid mutation of the original selection
-      let pos = {
-          line: cursor.line,
-          ch: line.length - 1 
-      };
-      // set the character position to the end of the line
-      doc.replaceRange('\n'+data+'\n', pos); // adds a new line
+
+      if (doc.somethingSelected()) {
+        doc.replaceSelection(data);
+      } else {
+        doc.replaceRange(data, cursor);
+      }
     };
 
     editor.val = function (val) {
@@ -144,6 +158,13 @@
         img.parentNode.className += 'img-wrap';
       }
     });
+
+    // list
+    // let listNum = create('img');
+    // listNum.src = 'https://p1.ssl.qhimg.com/t01fb3e28751b757288.png';
+    // query('li', li => {
+    //   li.insertAdjacentElement('afterbegin', listNum.cloneNode());
+    // });
 
     previewDOM.innerHTML = offlineDIV.innerHTML;
   };

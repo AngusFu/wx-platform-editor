@@ -40,6 +40,9 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
+
+  width: 1300px;
+  margin: 0 auto;
 }
 
 .container > div {
@@ -58,18 +61,19 @@ body {
   padding: 0;
 
   cursor: text;
-  font-size: 13px;
+  font-size: 16px;
   color: #444;
   line-height: 2;
-  border-right: 1px solid #0e0e0e;
+  background: #f7f7f7;
+  /*border-right: 1px solid #0e0e0e;*/
 }
 .container > .md-editor > div {
-  margin: 0 20px;
+  padding: 0 20px;
 }
 
 .container > .md-preview {
-  flex: 1;
-  /*font-family: sans-serif;*/
+  /*flex: 1;*/
+  width: 414px;
   font-size: 14px;
   color: #333;
 }
@@ -201,7 +205,7 @@ body {
   word-wrap: break-word;
 }
 .md-preview h1 {
-  display: none;
+  font-size: 28px;
 }
 .md-preview h2 {
   font-size: 24px;
@@ -271,15 +275,27 @@ body {
 .md-preview .code {
   font-size: 12px;
   margin: 0 2px;
-  white-space: pre-wrap;
-  word-break: break-all;
-  word-wrap: break-word;
   font-family: monospace;
   padding: 2px 4px;
   color: #d14;
   background-color: #f7f7f9;
   border: 1px solid #e1e1e8;
   border-radius: 2px;
+}
+.md-preview .link {
+  color: #1980e6;
+}
+
+.md-preview p {
+  text-align: justify;
+}
+.md-preview p,
+.md-preview .code,
+.md-preview .link {
+  white-space: pre-wrap;
+  word-break: break-all;
+  word-wrap: break-word;
+  hyphens:auto
 }
 
 .md-preview img {
@@ -291,10 +307,6 @@ body {
   text-align: center;
 }
 
-.md-preview .link {
-  color: #1980e6;
-}
-
 .md-preview ul,
 .md-preview ol {
   padding-left: 10px;
@@ -302,7 +314,7 @@ body {
 }
 .md-preview li {
   margin: 10px 0 10px 10px;
-  font-size: 10px;
+  font-size: 14px;
 }
 
 .md-preview .blockquote {
@@ -337,6 +349,7 @@ body {
 }
 .md-preview table tr {
   border-bottom: 1px solid #1491e8;
+  text-align: left;
 }
 .md-preview table td,
 .md-preview table th {

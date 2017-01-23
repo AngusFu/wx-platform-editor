@@ -29,7 +29,7 @@ pre[class*="language-"] {
 	padding: .4em .8em;
 	margin: .5em 0;
 	overflow: auto;
-	background: linear-gradient(-45deg, #fb3 25%, rgba(85, 136, 170, 0.67) 0, rgba(85, 136, 170, 0.67) 50%, #fb3 0, #fb3 75%, rgba(85, 136, 170, 0.67) 0);
+	background: #121558;
 	background-size: 10px 10px;
 }
 
