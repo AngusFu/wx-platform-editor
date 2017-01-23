@@ -200,13 +200,6 @@ const ERROR_IMAGES = {
 
 const onMessage = {
   noop() {},
-  
-  shakehands() {
-    chrome.runtime.sendMessage(null, {
-      type: 'comfirm',
-      state: 1
-    });
-  },
 
   inject(message) {
     // hide editor "placeholder"

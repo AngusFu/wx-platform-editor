@@ -1,64 +1,58 @@
 /**
- * send messages to certain tab
+ * query tab
  */
-const sendMsg = (url, msg) => new Promise((resolve, reject) => {
+const queryTabs = (url) => new Promise((resolve, reject) => {
   chrome.tabs.query({ url }, (tabs) => {
     if (!tabs.length) {
-      reject('no tab opened');
+      reject('no tabs matched');
       return;
     }
-    
+    resolve(tabs);
+  });
+});
+
+/**
+ * send messages to certain tab
+ */
+const sendMsg = (url, msg) => queryTabs(url).then(tabs => {
     chrome.tabs.sendMessage(tabs[0].id, Object.assign(msg || {}, {
       from: location.href
     }));
-
-    resolve(msg);
-  });
 });
 
 /**
  * wx editor URL pattern
  */
-const WX_PATTERN = 'https://mp.weixin.qq.com/cgi-bin/appmsg?t=media/appmsg_edit*';
+const WX_EDITOR_PATTERN = 'https://mp.weixin.qq.com/cgi-bin/appmsg?t=media/appmsg_edit*';
 
 /**
- * error warning images
+ * wx common URL pattern
  */
-const ERROR_IMAGES = {
-  gif: {
-    cdn_url: 'https://mmbiz.qlogo.cn/mmbiz_png/wic3OZ3sEjfwAGmvH7C0ROMb9aAfjvickkJI3TurmjVUd20tGB8fd1kgddYI45OkvcrZlvnu4vAjkS0ibSiafHco5g/0?wx_fmt=png',
-    cdn_id: 515897144,
-    is_placeholder: true
-  },
-  svg: {
-    cdn_url: 'https://mmbiz.qlogo.cn/mmbiz_png/wic3OZ3sEjfwAGmvH7C0ROMb9aAfjvickkfIVWBgj34x3hIV71YeDr9S8qCHPZquiaIm5db4jcI4s379QcSyCfAsA/0?wx_fmt=png',
-    cdn_id: 515897145,
-    is_placeholder: true
-  },
-  webp: {
-    cdn_url: 'https://mmbiz.qlogo.cn/mmbiz_png/wic3OZ3sEjfyrMXEzibBfqZsMhpl1aoibcK5SJ6Aib3exfj1v0UgNrXUvpibU0dwyESN3uHda5PGRwIRnxL8tA8FqSQ/0?wx_fmt=png',
-    cdn_id: 515897167,
-    is_placeholder: true
-  },
-  sizeError: {
-    cdn_url: 'https://mmbiz.qlogo.cn/mmbiz_png/wic3OZ3sEjfyrMXEzibBfqZsMhpl1aoibcKj4Cvx37S18WjHrvS8TP4eybIhkdr07B3jzsQbeWUia9hIulnUeNDXSQ/0?wx_fmt=png',
-    cdn_id: 515897166,
-    is_placeholder: true
-  },
-  typeError: {
-    cdn_url: 'https://mmbiz.qlogo.cn/mmbiz_png/wic3OZ3sEjfyrMXEzibBfqZsMhpl1aoibcKE20R9gsYOuiaz5AZ1ezUbT7iaIuliawQowL0Dibj3ElvJr70K6Q1ChyicdA/0?wx_fmt=png',
-    cdn_id: 515897169,
-    is_placeholder: true
-  }
-};
+const WX_COMMON_PATTERN = 'https://mp.weixin.qq.com/cgi-bin/*';
 
+/**
+ * using weixin token 
+ * open weixin editor
+ */
+let wx_page_token = '';
+const openWxEditor = () => {
+    let url = `https://mp.weixin.qq.com/cgi-bin/appmsg?t=media/appmsg_edit_v2&action=edit&isNew=1&type=10&lang=zh_CN&token=${wx_page_token}`;
+    if (confirm('需要新建微信图文素材吗？')) {
+      chrome.tabs.create({ url, selected: false });  
+    }
+};
 
 /**
  * no weixin editor tab is opened
  */
 const wxPageNotFound = function () {
-  alert('请打开微信公众号编辑页面后再进行操作！');
-  chrome.tabs.create({ url:'https://mp.weixin.qq.com/', selected: true });
+  if (wx_page_token) {
+    openWxEditor();
+  } else {
+    if (confirm('是否打开微信公众平台页面？')) {
+      chrome.tabs.create({ url:'https://mp.weixin.qq.com/', selected: true });
+    }
+  }
 };
 
 /**
@@ -130,7 +124,7 @@ const requestUpload = (url) => {
   // using canvas etc.
   // we'll deal with arge gif later
   if (/^image\/$/.test(url)) {
-    sendMsg(WX_PATTERN, {
+    sendMsg(WX_EDITOR_PATTERN, {
       type: 'upload',
       data: url,
       hash
@@ -143,7 +137,7 @@ const requestUpload = (url) => {
       // TODO: we can use isuxCompress
       middleware: checkAndReduceBlob
     })
-    .then(data => data && sendMsg(WX_PATTERN, {
+    .then(data => data && sendMsg(WX_EDITOR_PATTERN, {
       type: 'upload',
       data,
       hash
@@ -167,6 +161,38 @@ const waitUploadDone = (identifier) => new Promise(resolve => {
   };
   chrome.runtime.onMessage.addListener(listener);
 });
+
+
+/**
+ * error warning images
+ */
+const ERROR_IMAGES = {
+  gif: {
+    cdn_url: 'https://mmbiz.qlogo.cn/mmbiz_png/wic3OZ3sEjfwAGmvH7C0ROMb9aAfjvickkJI3TurmjVUd20tGB8fd1kgddYI45OkvcrZlvnu4vAjkS0ibSiafHco5g/0?wx_fmt=png',
+    cdn_id: 515897144,
+    is_placeholder: true
+  },
+  svg: {
+    cdn_url: 'https://mmbiz.qlogo.cn/mmbiz_png/wic3OZ3sEjfwAGmvH7C0ROMb9aAfjvickkfIVWBgj34x3hIV71YeDr9S8qCHPZquiaIm5db4jcI4s379QcSyCfAsA/0?wx_fmt=png',
+    cdn_id: 515897145,
+    is_placeholder: true
+  },
+  webp: {
+    cdn_url: 'https://mmbiz.qlogo.cn/mmbiz_png/wic3OZ3sEjfyrMXEzibBfqZsMhpl1aoibcK5SJ6Aib3exfj1v0UgNrXUvpibU0dwyESN3uHda5PGRwIRnxL8tA8FqSQ/0?wx_fmt=png',
+    cdn_id: 515897167,
+    is_placeholder: true
+  },
+  sizeError: {
+    cdn_url: 'https://mmbiz.qlogo.cn/mmbiz_png/wic3OZ3sEjfyrMXEzibBfqZsMhpl1aoibcKj4Cvx37S18WjHrvS8TP4eybIhkdr07B3jzsQbeWUia9hIulnUeNDXSQ/0?wx_fmt=png',
+    cdn_id: 515897166,
+    is_placeholder: true
+  },
+  typeError: {
+    cdn_url: 'https://mmbiz.qlogo.cn/mmbiz_png/wic3OZ3sEjfyrMXEzibBfqZsMhpl1aoibcKE20R9gsYOuiaz5AZ1ezUbT7iaIuliawQowL0Dibj3ElvJr70K6Q1ChyicdA/0?wx_fmt=png',
+    cdn_id: 515897169,
+    is_placeholder: true
+  }
+};
 
 
 // ===================================================================
@@ -381,27 +407,38 @@ document.addEventListener('paste', (e) => {
     });
     
     // inject
-    sendMsg(WX_PATTERN, {
+    sendMsg(WX_EDITOR_PATTERN, {
       type: 'inject',
       data: divDOM.innerHTML,
       author: authorDOM.value,
       url: urlDOM.value
     });
     // focus 
-    focusTab(WX_PATTERN);
+    focusTab(WX_EDITOR_PATTERN);
   });
 });
 
 
 ;(function init() {
+
   // recover cache url
   inputDOM.value = store.get('url_last_time');
-  // check weixin page
-  sendMsg(WX_PATTERN, { type: 'shakehands' }).catch(wxPageNotFound);
-  // log messages
-  chrome.runtime.onMessage.addListener(i => log(i));
-
   // request demo
   getMarkdownContent('http://www.zcfy.cc/article/the-service-worker-lifecycle-951.html')
     .then(o => window.mdEditor.val(o.content));
+
+  // shakehands, request for any token
+  sendMsg(WX_COMMON_PATTERN, { type: 'shakehands' }).catch(wxPageNotFound);
+  // if we can't shakehands with any page 
+  // then we have to wait for any msg from weixin page
+  chrome.runtime.onMessage.addListener(function (msg) {
+    let { type, token } = msg;
+    
+    if (type === 'token') {
+      wx_page_token = token;
+      queryTabs(WX_EDITOR_PATTERN).catch(openWxEditor);
+    }
+
+    log(msg);
+  });
 }());
