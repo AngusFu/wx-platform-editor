@@ -46,7 +46,6 @@
     tImg.src = src
   }
 
-  /* opt {quality :0-1}*/
   function imageReduce(file, cbk, opts) {
     var opt = Object.assign({}, {
       scale: .9,

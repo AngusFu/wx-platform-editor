@@ -1,3 +1,55 @@
+/**
+ * http://www.zcfy.cc/static/js/article.js?v=8d1f3.js
+ */
+const generateMdText = content => {
+  return toMarkdown(content, {
+    gfm: false,
+    converters: [{
+      filter: 'code',
+      replacement: function (t, n) {
+        return /\n/.test(t) ? t : '`' + t + '`';
+      }
+    }, {
+      filter: 'pre',
+      replacement: function (t, n) {
+        let lang = '';
+        let result = t;
+
+        let firstChild = n.children[0];
+        if (firstChild) {
+          let match = firstChild.className.match(/(^|\s)(lang|language)-([^\s]+)/);
+          lang = match && match[3] || '';
+        }
+
+        switch (lang) {
+          case 'js':
+          case 'javascript':
+            result = js_beautify(t);
+            break;
+          case 'css':
+            result = css_beautify(t);
+            break;
+          case 'html':
+            result = html_beautify(t);
+            break;
+        }
+
+        return '\n```' + lang + '\n' + result + '\n```\n'
+      }
+    }, {
+      filter: 'span',
+      replacement: function (t, n) {
+        return t
+      }
+    }, {
+      filter: ['section', 'div'],
+      replacement: function (t, n) {
+        return '\n\n' + t + '\n\n'
+      }
+    }]
+  });
+};
+
 ;(function () {
   let previewDOM = getDOM('.md-preview');
 
@@ -25,7 +77,6 @@
 
     configMarked();
     
-    // 添加新段落
     // editor.insertParagraph = function (data) {
     //   let cm = this.codemirror;
     //   let doc = cm.getDoc();
@@ -183,7 +234,7 @@
    */
   getDOM('.md-editor').addEventListener('paste', function (e) {
     e.preventDefault();
-    
+
     let data = e.clipboardData.getData('text/html')
     let markdown = '';
 
@@ -203,7 +254,6 @@
       markdown = generateMdText(divDOM.innerHTML);
     }
 
-    // TODO: this is wrong 
     window.mdEditor.insert(markdown);
   });
 })();

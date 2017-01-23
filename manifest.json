@@ -1,14 +1,11 @@
 {
-    "name": "wx-platform-editor",
+    "name": "微信公众号编辑助手",
     "description": "weixin public platform editor",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "permissions": [
         "tabs",
-        "contextMenus",
         "activeTab",
         "cookies",
-        "notifications",
-        "alarms",
         "storage",
         "webNavigation",
         "clipboardRead",
@@ -26,7 +23,7 @@
         "matches": ["https://mp.weixin.qq.com/cgi-bin/appmsg?t=media/appmsg_edit*"],
         "js": ["./wxinject.js"]
     }, {
-        "run_at": "document_start",
+        "run_at": "document_end",
         "matches": ["https://mp.weixin.qq.com/cgi-bin/*"],
         "js": ["./wxtoken.js"]
     }],

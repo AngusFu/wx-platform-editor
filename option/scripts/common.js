@@ -6,57 +6,6 @@ const getAll = (s, target = document) => {
 };
 
 /**
- * http://www.zcfy.cc/static/js/article.js?v=8d1f3.js
- */
-let generateMdText = content => {
-  return toMarkdown(content, {
-    gfm: false,
-    converters: [{
-      filter: 'code',
-      replacement: function (t, n) {
-        return /\n/.test(t) ? t : '`' + t + '`';
-      }
-    }, {
-      filter: 'pre',
-      replacement: function (t, n) {
-        let lang = '';
-        let result = t;
-
-        let firstChild = n.children[0];
-        if (firstChild) {
-          let match = firstChild.className.match(/(^|\s)(lang|language)-([^\s]+)/);
-          lang = match && match[3] || '';
-        }
-
-        switch (lang) {
-          case 'js':
-          case 'javascript':
-            result = js_beautify(t);
-            break;
-          case 'css':
-            result = css_beautify(t);
-            break;
-          case 'html':
-            result = html_beautify(t);
-            break;
-        }
-
-        return '\n```' + lang + '\n' + result + '\n```\n'
-      }
-    }, {
-      filter: 'span',
-      replacement: function (t, n) {
-        return t
-      }
-    }, {
-      filter: ['section', 'div'],
-      replacement: function (t, n) {
-        return '\n\n' + t + '\n\n'
-      }
-    }]
-  });
-};
-/**
  * md5
  */
 const md5 = (function () {

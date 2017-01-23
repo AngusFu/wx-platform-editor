@@ -1,13 +1,21 @@
+/**
+ * get wexin token
+ * so that we can open editor directly
+ * using a template string
+ */
 let url = new URL(location.href);
 let params = new URLSearchParams(url.search);
 let type = params.get('t');
 let token = params.get('token');
 
-console.log(token);
+let hasError = document.body.classList.contains('page_error');
+let isEditor = /media\/appmsg_edit/.test(type);
 
 // any wexin page that contains token
 // except editor page
-if (token && !/media\/appmsg_edit/.test(type)) {
+if (token && !hasError && !isEditor) {
+  console.log(token);
+
   const onMessage = {
     noop() {},
 
@@ -19,11 +27,13 @@ if (token && !/media\/appmsg_edit/.test(type)) {
     }
   };
 
+  // listen for handshake
   chrome.runtime.onMessage.addListener(function (message) {
     console.info(message);
     (onMessage[message.type] || onMessage['noop'])(message);
   });
   
+  // send message at once
   chrome.runtime.sendMessage(null, {
     type: 'token',
     token

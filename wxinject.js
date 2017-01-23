@@ -1,4 +1,9 @@
 /**
+ * 1. upload images on notification `upload`
+ * 2. inject HTML on notification `inject`
+ */
+
+/**
  * basic utils
  */
 const qs  = sel => document.querySelector(sel);
@@ -76,10 +81,13 @@ const dataURItoBlob = function (dataURI) {
 
 
 /**
- * @method
- * 
- * 通过暴力破解的办法拿到相关参数
- * 然后上传图片
+ * get related params violently
+ * so that we can upload images here,
+ * all we need are held by `window.wx`,
+ * but we don't have access to global vars here,
+ * yet we can reach DOMs.
+ * and fortunately `window.wx` was assigned in a 
+ * inline script, aha, comes the trick!
  */
 const uploadImage = (function () {
   // 暴力破解
@@ -105,28 +113,25 @@ const uploadImage = (function () {
   }
 
   // groupid=3
-  // 默认放到文章配图中去
-  // 当然以后也可以通过异步接口拿到所有可用的分组，让用户自己选择
+  // put all images to the category `文章配图`,
+  // in this way, we'll get less bothered.
+  // by following API, we can get all available categories:
   // https://mp.weixin.qq.com/cgi-bin/filepage?1=1&token=129636898&lang=zh_CN&token=129636898&lang=zh_CN&f=json&ajax=1&random=0.8964656583498374&group_id=0&begin=0&count=10&type=2
+  // in this way, customization is no fairy.
   var url = `https://mp.weixin.qq.com/cgi-bin/filetransfer?action=upload_material&f=json&scene=1&writetype=doublewrite&groupid=3&ticket_id=${wx.data.user_name}&ticket=${wx.data.ticket}&svr_time=${wx.data.time}&token=${wx.data.t}&lang=zh_CN&seq=1`;
 
   return function (base64) {
-    var xhr = new XMLHttpRequest();
-    var form = new FormData();
     var blob = dataURItoBlob(base64);
     var fileType = blob.type;
-    var MimeStriped = fileType.replace('image/', '');
-    var fileExt = MimeStriped === 'svg+xml' ? 'svg' : MimeStriped;
-    var fileName = guid() + '.' + fileExt;
+    var typeName = fileType.replace('image/', '');
+    var fileExt  = typeName === 'svg+xml' ? 'svg' : typeName;
+    var fileName = `${guid()}.${fileExt}`;
 
-    // 直接上传 Blob 对象不可以
-    // 修改不了 filename 属性
-    // 导致上传失败
-    // 估计是微信后台做了验证
-    // 
-    // File API 出手:
-    //  see https://www.w3.org/TR/FileAPI/
-    //  
+    // why not Blob directly?
+    // since the prop `filename` will not change,
+    // uploading work fails.
+    // show time for File API:
+    // see https://www.w3.org/TR/FileAPI/  
     var file = new File([blob], fileName, {
       type: fileType,
       lastModified: getRandomDate()
@@ -134,34 +139,37 @@ const uploadImage = (function () {
     var fileSize = file.size;
     
     return new Promise(function (resolve, reject) {
+      // validate first
+      // 1. invalid type
       if (!/jpeg|png|gif/i.test(fileExt)) {
         resolve(JSON.stringify(ERROR_IMAGES[fileExt] || ERROR_IMAGES['typeError']));
         return;
-      } else if (fileSize >= 2 * 1024 * 1024) {
+      }
+      // 2. size of image too large
+      if (fileSize >= 2 * 1024 * 1024) {
         resolve(JSON.stringify(
           ERROR_IMAGES[fileExt === 'gif' ? 'gif' : 'sizeError']
         ));
         return;
       }
 
-      form.append('id', 'WU_FILE_0');
+      var form = new FormData();
+      form.append('file', file);
       form.append('name', fileName);
       form.append('type', fileType);
-      form.append('lastModifiedDate', file.lastModifiedDate);
       form.append('size', fileSize);
-      form.append('file', file);
+      form.append('id', 'WU_FILE_0');
+      form.append('lastModifiedDate', file.lastModifiedDate);
 
-      xhr.onreadystatechange = function () {
-        if (!/^2\d{2}$/.test(xhr.status) || xhr.readyState < 4) return;
-        resolve(xhr.response);
-      };
-
-      xhr.onerror = xhr.ontimeout = function (e) {
-        reject(e);
-      };
-
+      var xhr = new XMLHttpRequest();
       xhr.open('POST', url);
       xhr.send(form);
+      xhr.onerror = xhr.ontimeout = reject;
+      xhr.onreadystatechange = () => {
+        if (/^2\d{2}$/.test(xhr.status) && xhr.readyState === 4) {
+          resolve(xhr.response);
+        }
+      };
     });
 
   };

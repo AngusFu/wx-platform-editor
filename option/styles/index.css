@@ -37,11 +37,11 @@ body {
   display: flex;
   flex-direction: row;
   box-sizing: border-box;
-  width: 100%;
   height: 100%;
   overflow: hidden;
 
-  width: 1300px;
+  min-width: 1280px;
+  max-width: 1280px;
   margin: 0 auto;
 }
 
@@ -136,19 +136,24 @@ body {
 }
 
 /*btn icons*/
-.header > .btn-icons {
+.header > .btns {
   display: flex;
   align-items: center;
   padding: 10px;
 }
-.btn-icons a {
+.btns a {
   display: block;
-  height: 32px;
-  margin-right: 10px;
+  /*height: 32px;*/
+  margin-left: 20px;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.8);
 }
-.btn-icons a:hover path {
+.btns a:hover {
+  color: #fff;
+}
+/*.btns a:hover path {
   fill: #ffffff;
-}
+}*/
 
 /*article meta*/
 .header > .article-meta {
