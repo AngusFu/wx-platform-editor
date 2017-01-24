@@ -448,7 +448,7 @@ body {
 }
 
 .md-preview > *:first-child {
-  margin-top: 0;
+  margin-top: 0!important;
 }
 
 .md-preview .pre,
