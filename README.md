@@ -45,3 +45,8 @@
 ## DEMO
 
 ![微信图文效果](./images/demo.jpg)
+
+## TODO
+
+1. 外站相对路径解析
+2. Markdown 编辑器暂不支持 HTML 标签
