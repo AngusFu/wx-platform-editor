@@ -5,7 +5,14 @@
   <title>Wechat Editor</title>
   <link rel="stylesheet" href="./styles/index.css">
   <link rel="stylesheet" href="./styles/prism-okaidia.css" id="prismTheme">
-  <link rel="stylesheet" href="./styles/lepture.editor.css">
+  <link rel="stylesheet" href="./lib/codemirror/lib/codemirror.css">
+  <link rel="stylesheet" href="./styles/base16-light.css">
+  <style>
+  .CodeMirror {
+    min-height: 100%;
+    font-family: "Helvetica Neue",Arial,"Hiragino Sans GB",STHeiti,"Microsoft YaHei";
+  }
+  </style>
 </head>
 <body>
   <div class="header">
@@ -25,7 +32,7 @@
 
   <div class="container">
     <div class="md-editor editor-wrapper">
-      <textarea id="jsMdEditor"></textarea>
+      <textarea id="jsMdEditor" class="md-editor"></textarea>
     </div>
     <div class="md-preview"><div class="statusbar"></div></div>
   </div>
@@ -84,7 +91,16 @@
   <script src="./lib/prism.all.js"></script>
   <script src="./lib/marked.min.js"></script>
   <script src="./lib/to-markdown.js"></script>
-  <script src="./lib/lepture.editor.js"></script>
+  <script src="./lib/codemirror/lib/codemirror.js"></script>
+  <script src="./lib/codemirror/overlay.js"></script>
+  <script src="./lib/codemirror/xml/xml.js"></script>
+  <script src="./lib/codemirror/markdown/markdown.js"></script>
+  <script src="./lib/codemirror/gfm/gfm.js"></script>
+  <script src="./lib/codemirror/javascript/javascript.js"></script>
+  <script src="./lib/codemirror/css/css.js"></script>
+  <script src="./lib/codemirror/htmlmixed/htmlmixed.js"></script>
+
+
   <script src="./lib/md5.js"></script>
   <script src="./lib/beautify.js"></script>
   <script src="./lib/beautify-css.js"></script>

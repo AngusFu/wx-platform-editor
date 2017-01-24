@@ -345,7 +345,7 @@ submitDOM.addEventListener('click', function (e) {
     }
     // fill editor
     // and trigger input event
-    window.mdEditor.val(o.content);
+    window.MdEditor.val(o.content);
     authorDOM.value = o.author;
     urlDOM.value = o.url;
 
@@ -459,7 +459,7 @@ document.addEventListener('paste', (e) => {
   // request demo
   fetch('/README.md')
     .then(r => r.text())
-    .then(t => window.mdEditor.val(t));
+    .then(t => window.MdEditor.val(t));
 
   // shakehands, request for any token
   sendMsg(WX_COMMON_PATTERN, { type: 'shakehands' }).catch(wxPageNotFound);

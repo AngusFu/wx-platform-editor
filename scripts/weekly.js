@@ -84,7 +84,7 @@ const wxInjector = {
         return err;
       })
       .catch(function (e) {
-        getDOM('.net-err').style.display = 'block';
+        getDOM('.net-err').style.display = 'inline';
         console.error(e, err);
         return err;
       });
@@ -277,6 +277,7 @@ const wxInjector = {
     }).catch(e => {
        console.error('通过 rss 获取最新期数失败');
        alert('发生错误，请检查网络状态！');
+       getDOM('.net-err').style.display = 'inline';
     })
     .then(() => {
       Loading.hide();
