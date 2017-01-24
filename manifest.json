@@ -13,10 +13,10 @@
         "\u003Call_urls\u003E"
     ],
     "browser_action": {
-        "default_icon": "./img/wechat.png"
+        "default_icon": "./images/wechat.png"
     },
     "icons": {
-        "128": "./img/wechat.png"
+        "128": "./images/wechat.png"
     },
     "content_scripts": [{
         "run_at": "document_end",
@@ -30,7 +30,7 @@
     "background": {
         "scripts": ["./background.js"]
     },
-    "options_page": "./option/index.html",
+    "options_page": "./index.html",
     "manifest_version": 2,
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 }

@@ -12,10 +12,11 @@ const Loading = (function () {
     let div = document.createElement('div');
     div.innerHTML = html;
     document.body.appendChild(div);
+    let elem = getAll('#loading-wx', div)[0];
 
     return {
-      show: () => div.style.display = 'block',
-      hide: () => div.style.display = 'none'
+      show: () => elem.style.display = 'block',
+      hide: () => elem.style.display = 'none'
     };
 })();
 

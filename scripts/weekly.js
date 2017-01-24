@@ -217,7 +217,8 @@ const wxInjector = {
         return;
       }
       isSubmiting = true;
-      
+      Loading.show();
+
       let dataStore = {
         index: self.index,
         origin: self.origin,
@@ -251,7 +252,8 @@ const wxInjector = {
         focusTab(WX_EDITOR_PATTERN);
       })
       .then(() => isSubmiting = false)
-      .catch(() => isSubmiting = false);
+      .catch(() => isSubmiting = false)
+      .then(() => Loading.hide());
     });
   },
 
@@ -272,7 +274,7 @@ const wxInjector = {
       dispatch(indexDOM, 'change');
     }).catch(e => {
        console.error('通过 rss 获取最新期数失败');
-       alert('发生错误，请检查控制台！');
+       alert('发生错误，请检查网络状态！');
     })
     .then(() => {
       Loading.hide();

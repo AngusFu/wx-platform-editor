@@ -129,9 +129,21 @@ const requestUpload = (url) => {
       data: url,
       hash
     });
+
+    return Promise.resolve(hash);
   }
 
-  if (/^https?:/.test(url)) {
+  // `//example.cpm`
+  if (/^\/\/[^\/]+/.test(url)) {
+    url += 'http:';
+  }
+
+  let a = document.createElement('a');
+  a.href = url;
+  url = a.href;
+  
+  // http(s)
+  if (/^(https?|chrome-extension):/.test(url)) {
     fetchImage({
       url,
       // TODO: we can use isuxCompress
@@ -142,9 +154,13 @@ const requestUpload = (url) => {
       data,
       hash
     }));
+
+    return Promise.resolve(hash);
   }
 
-  return Promise.resolve(hash);
+  
+  store.set(hash, ERROR_IMAGES.typeError);
+  throw `${url} is not allowed`;
 };
 
 /**
@@ -304,10 +320,12 @@ submitDOM.addEventListener('click', function (e) {
     return;
   }
 
+  Loading.show();
   isRequestPending = true;
   errTipDOM.innerHTML = '正在抓取中...请稍后....';
   errTipDOM.style.display = 'block';
   jsURLDOM.setAttribute('readonly', true);
+  
   
   // cache url
   store.set('url_last_time', url);
@@ -335,6 +353,7 @@ submitDOM.addEventListener('click', function (e) {
     jsURLDOM.removeAttribute('readonly');
   })
   .then(() => {
+    Loading.hide();
     isRequestPending = false;
   });
 });
@@ -402,7 +421,8 @@ document.addEventListener('paste', (e) => {
         }
         // cache data
         store.set(hash, data);
-      });
+      })
+      .catch(e => console.error(e));
   });
   
   // replace url
@@ -430,8 +450,9 @@ document.addEventListener('paste', (e) => {
   // recover cache url
   jsURLDOM.value = store.get('url_last_time');
   // request demo
-  getMarkdownContent('http://www.zcfy.cc/article/the-service-worker-lifecycle-951.html')
-    .then(o => window.mdEditor.val(o.content));
+  fetch('/README.md')
+    .then(r => r.text())
+    .then(t => window.mdEditor.val(t));
 
   // shakehands, request for any token
   sendMsg(WX_COMMON_PATTERN, { type: 'shakehands' }).catch(wxPageNotFound);
