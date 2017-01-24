@@ -6,6 +6,9 @@
 img {
   vertical-align: middle;
 }
+input, textarea {
+  font-family: inherit;
+}
 input:focus,
 textarea:focus {
   outline: 0;
@@ -83,6 +86,7 @@ body {
 }
 
 /*popup styles*/
+.pop-form-mask,
 .pop-mask {
   display: none;
   position: fixed;
@@ -95,6 +99,7 @@ body {
   height: 100%;
   background-color: rgba(22, 23, 24, .5);
 }
+.pop-form-content,
 .pop-content {
   width: 70%;
   height: 300px;
@@ -140,38 +145,108 @@ body {
 }
 
 /*weekly pop*/
-.pop-form {
+.pop-form-content {
   display: flex;
-  height: 500px;
+  height: 420px;
   font-size: 16px;
   padding: 30px;
 }
-.pop-form > div {
+.pop-form-content > div {
   width: 50%;
   box-sizing: border-box;
 }
 
-.pop-form label {
+.pop-form-content > div > label {
   display: block;
   margin: 12px 0 6px;
+  font-weight: bold;
 }
-.pop-form input,
-.pop-form textarea {
-  padding: 5px 10px;
+
+.pop-form-content > div > label > i {
+  margin-left: 10px;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: normal;
+  cursor: pointer;
+  -webkit-user-select: none;
+    user-select: none;
+}
+.pop-form-content > div > label > i:hover {
+  color: coral;
+}
+
+.pop-form-content > div > input,
+.pop-form-content > div > textarea {
   font-size: 14px;
   border-bottom: 1px solid #eaad17;
 }
-.pop-form input {
+
+.pop-form-content > div > input {
   display: block;
   width: 70%;
   margin: 6px 0 ;
+  padding: 5px 10px;
 }
-.pop-form textarea {
+.pop-form-content > div > textarea {
   display: block;
   width: 90%;
-  height: 172px;
+  height: 110px;
+  padding: 10px;
+  line-height: 2;
+  border: 1px solid #ccc;
   resize: none;
-  border: 1px solid #eee;
+}
+
+.pop-form-content .file-group {
+  display: flex;
+  width: 70%;
+  height: 22px;
+  margin: 6px 0;
+  padding: 5px 10px;
+  border-bottom: 1px solid #eaad17;
+}
+.file-group > img {
+  width: 22px;
+  height: 22px;
+  margin-right: -10px;
+  cursor: pointer;
+}
+.file-group > input {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.file-group > input[type="text"] {
+  flex: 1 0 0;
+}
+.file-group > label {
+  width: 22px;
+  height: 22px;
+  margin-right: -10px;
+  overflow: hidden;
+  background: url("../images/folder.png");
+  background-size: 22px 22px;
+  cursor: pointer;
+}
+.file-group > label > input[type="file"] {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+.edit-done {
+  display: block;
+  width: 100px;
+  padding: 1em;
+  margin-top: 20px;
+  font-size: 12px;
+  text-decoration: none;
+  text-align: center;
+  color: #fff;
+  background: rgba(20, 145, 232, 1);
+}
+.edit-done:hover {
+  background: rgba(20, 145, 232, 0.86);
 }
 
 /*btn icons*/
@@ -190,9 +265,6 @@ body {
 .btns a:hover {
   color: #fff;
 }
-/*.btns a:hover path {
-  fill: #ffffff;
-}*/
 
 /*article meta*/
 .header > .article-meta {
@@ -216,7 +288,6 @@ body {
   height: 30px;
   background: transparent;
   color: #f0f8ff;
-  font-family: inherit;
   font-size: 16px;
   margin-top: 2px;
 }
@@ -340,7 +411,7 @@ body {
   white-space: pre-wrap;
   word-break: break-all;
   word-wrap: break-word;
-  hyphens:auto
+  hyphens: auto;
 }
 
 .md-preview img {

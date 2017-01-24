@@ -39,35 +39,43 @@
     </div>
   </div>
 
-  <div class="pop-mask" style="display: block">
-    <form class="pop-content pop-form">
+  <div class="pop-form-mask">
+    <form id="weeklyForm" class="pop-form-content">
       <div class="left-part">
-        <label for="number">期数</label>
-        <input type="number" id="number" placeholder="周刊期数" min="1">
-        <br>
-        <label for="author">作者</label>
-        <input type="text" id="author" placeholder="作者名称" value="文蔺">
-        <br>
+        <label>期数</label>
+        <input type="number" id="weeklyIndex" placeholder="请输入周刊期数" min="1" required>
 
-        <label for="imgurl">封面图</label>
-        <input type="file" id="imgcover" accept="image/*">
-        <input type="text" id="imgcoverurl" placeholder="请输入有效图片地址">
+        <label>作者</label>
+        <input type="text" id="weeklyAuthor" placeholder="请输入编辑姓名" value="文蔺" maxlength="8" required>
 
-        <label for="imgurl">动图</label>
-        <input type="file" id="imggif" accept="image/*">
-        <input type="text" id="imggifurl" placeholder="请输入有效图片地址">
+        <label>封面</label>
+        <div class="file-group">
+          <input type="text" id="weeklyCoverURL" placeholder="请输入有效图片地址">
+          <label title="选择文件">
+            <input type="file" id="weeklyCoverFile" accept="image/*">
+          </label>
+        </div>
 
-        <label for="gifCopy">动图作者</label>
-        <input type="text" id="gifCopy" placeholder="请输入动图作者">
+        <label>动图</label>
+        <div class="file-group">
+          <input type="text" id="weeklyAnimURL" placeholder="请输入有效图片地址">
+          <label title="选择文件">
+            <input type="file" id="weeklyAnimFile" accept="image/*">
+          </label>
+        </div>
+
+        <label>动图作者</label>
+        <input type="text" id="weeklyAnimSrc" placeholder="请输入动图作者" maxlength="8">
       </div>
 
       <div class="right-part">
-        <label for="abstract">摘要</label>
-        <textarea id="abstract">周刊君如约而至~周末愉快~</textarea>
-        <br>
+        <label>摘要 <i id="randomAbstract">换换看</i></label>
+        <textarea id="weeklyAbstract"></textarea>
 
-        <label for="hello">欢迎语</label>
-        <textarea id="hello">哟嗬~ 又到周五啦~ 又一个周末即将来临，奇舞周刊如约而至。好开森~</textarea>
+        <label>欢迎语 <i id="randomLeading">换换看</i></label>
+        <textarea id="weeklyLeading"></textarea>
+
+        <a id="weeklyDone" class="edit-done" href="#">周刊编辑完成</a>
       </div>
     </form>
   </div>
@@ -85,6 +93,7 @@
   <script src="./scripts/common.js"></script>
   <script src="./scripts/editor.js"></script>
   <script src="./scripts/getContent.js"></script>
-  <script src="./scripts/index.js"></script>
+  <script src="./scripts/weekly.js"></script>
+  <script src="./scripts/main.js"></script>
 </body>
 </html>

@@ -123,7 +123,7 @@ const requestUpload = (url) => {
   // normal pics that can be reduced 
   // using canvas etc.
   // we'll deal with arge gif later
-  if (/^image\/$/.test(url)) {
+  if (/^data:image\//.test(url)) {
     sendMsg(WX_EDITOR_PATTERN, {
       type: 'upload',
       data: url,
@@ -202,8 +202,8 @@ let authorDOM  = getDOM('#authorName');
 let urlDOM     = getDOM('#articleURL');
 
 let maskDOM    = getDOM('.pop-mask');
-let inputDOM   = getDOM('#jsURL');
-let tipDOM     = getDOM('.error-tip');
+let jsURLDOM   = getDOM('#jsURL');
+let errTipDOM  = getDOM('.error-tip');
 let submitDOM  = getDOM('.submit-btn');
 let HTTP_REGEX = /^https?\:\/\/[^\.]+\..+/;
 
@@ -245,13 +245,19 @@ getDOM('#jsWxInjectBtn').addEventListener('click', (e) => {
  */
 getDOM('#jsNewBtn').addEventListener('click', (e) => {
   // location.reload();
-  inputDOM.removeAttribute('readonly');
-  tipDOM.style.display  = 'none';
+  jsURLDOM.removeAttribute('readonly');
+  errTipDOM.style.display  = 'none';
   maskDOM.style.display = 'block';
-  inputDOM.focus();
-  inputDOM.select();
+  jsURLDOM.focus();
+  jsURLDOM.select();
 });
 
+/**
+ * weekly
+ */
+getDOM('#jsWeekly').addEventListener('click', (e) => {
+  wxInjector.init();
+});
 
 /*********************************************************************
  *                       popup 
@@ -268,14 +274,14 @@ maskDOM.addEventListener('click', function (e) {
 /**
  * validation
  */
-inputDOM.addEventListener('keyup', function (e) {
+jsURLDOM.addEventListener('keyup', function (e) {
   let url = this.value.trim();
 
   if (url && !HTTP_REGEX.test(url)) {
-    tipDOM.innerHTML = '请输入正确格式的 url';
-    tipDOM.style.display = 'block';
+    errTipDOM.innerHTML = '请输入正确格式的 url';
+    errTipDOM.style.display = 'block';
   } else {
-    tipDOM.style.display = 'none';
+    errTipDOM.style.display = 'none';
   }
 });
 
@@ -288,28 +294,28 @@ submitDOM.addEventListener('click', function (e) {
     return;
   }
 
-  let url = inputDOM.value.trim();
+  let url = jsURLDOM.value.trim();
 
   if (!HTTP_REGEX.test(url)) {
     if (url) {
-      tipDOM.innerHTML = '请输入正确格式的 url';
-      tipDOM.style.display = 'block';
+      errTipDOM.innerHTML = '请输入正确格式的 url';
+      errTipDOM.style.display = 'block';
     }
     return;
   }
 
   isRequestPending = true;
-  tipDOM.innerHTML = '正在抓取中...请稍后....';
-  tipDOM.style.display = 'block';
-  inputDOM.setAttribute('readonly', true);
+  errTipDOM.innerHTML = '正在抓取中...请稍后....';
+  errTipDOM.style.display = 'block';
+  jsURLDOM.setAttribute('readonly', true);
   
   // cache url
   store.set('url_last_time', url);
 
   getMarkdownContent(url).then(o => {
     if (!o) {
-      tipDOM.innerHTML = '抱歉，无法抓取该 url 对应的内容';
-      tipDOM.style.display = 'block';
+      errTipDOM.innerHTML = '抱歉，无法抓取该 url 对应的内容';
+      errTipDOM.style.display = 'block';
       return;
     }
     // fill editor
@@ -324,9 +330,9 @@ submitDOM.addEventListener('click', function (e) {
   .catch(e => {
     console.error(e);
     maskDOM.style.display = 'block';
-    tipDOM.style.display  = 'block';
-    tipDOM.innerHTML = '似乎发生了错误，请检查控制台';
-    inputDOM.removeAttribute('readonly');
+    errTipDOM.style.display  = 'block';
+    errTipDOM.innerHTML = '似乎发生了错误，请检查控制台';
+    jsURLDOM.removeAttribute('readonly');
   })
   .then(() => {
     isRequestPending = false;
@@ -422,7 +428,7 @@ document.addEventListener('paste', (e) => {
 ;(function init() {
 
   // recover cache url
-  inputDOM.value = store.get('url_last_time');
+  jsURLDOM.value = store.get('url_last_time');
   // request demo
   getMarkdownContent('http://www.zcfy.cc/article/the-service-worker-lifecycle-951.html')
     .then(o => window.mdEditor.val(o.content));
@@ -434,7 +440,7 @@ document.addEventListener('paste', (e) => {
   chrome.runtime.onMessage.addListener(function (msg) {
     let { type, token } = msg;
     
-    if (type === 'token') {
+    if (type === 'token' && token) {
       wx_page_token = token;
       queryTabs(WX_EDITOR_PATTERN).catch(openWxEditor);
     }

@@ -20,7 +20,7 @@
     "*.css": "css",
     "*.demo": "html"
   },
-  "window.zoomLevel": 0,
+  "window.zoomLevel": -1,
   "vsicons.dontShowNewVersionMessage": true,
   "jshint.enable": false
 }
