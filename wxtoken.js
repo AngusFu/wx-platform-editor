@@ -7,8 +7,8 @@ let url = new URL(location.href);
 let params = new URLSearchParams(url.search);
 let type = params.get('t');
 let token = params.get('token');
-
-let hasError = document.body.classList.contains('page_error');
+ 
+let hasError = document.querySelector('.page_error') || document.querySelector('.page_timeout');
 let isEditor = /media\/appmsg_edit/.test(type);
 
 // any wexin page that contains token
