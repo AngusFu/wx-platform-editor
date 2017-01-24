@@ -4,6 +4,8 @@
 
 如果您只需要代码高亮功能，请访问 [https://angusfu.github.io/wx-editor/](https://angusfu.github.io/wx-editor/)。
 
+![截图](./images/screenshot.png)
+
 ## Features
 - 专为微信图文推送定制，`Markdown` 编辑省心省力
 - 代码高亮保证好用，七种 Prims 代码主题任你选
@@ -39,4 +41,4 @@
 
 ## DEMO
 
-![](./demo.jpg)
+![微信图文效果](./images/demo.jpg)
