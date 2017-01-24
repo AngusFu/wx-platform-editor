@@ -506,22 +506,22 @@ body {
   hyphens: auto;
 }
 
-.md-preview img {
+.md-preview .img-wrap img {
   max-width: 100%;
 }
 .md-preview .img-wrap {
-  margin: 30px auto;
+  margin: 15px auto;
   overflow: hidden;
   text-align: center;
 }
 
 .md-preview ul,
 .md-preview ol {
-  padding-left: 10px;
-  line-height: 2;
+  padding-left: 20px;
+  line-height: 1.8;
 }
 .md-preview li {
-  margin: 10px 0 10px 10px;
+  margin: 5px 0 5px 5px;
   font-size: 14px;
 }
 

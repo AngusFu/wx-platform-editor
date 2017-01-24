@@ -283,6 +283,16 @@ getDOM('#jsJustCopy').addEventListener('click', (e) => {
 });
 
 /*********************************************************************
+ *                       metas 
+ ********************************************************************/
+authorDOM.addEventListener('change', function (e) {
+  store.set('__historyMeta.author', this.value);
+});
+urlDOM.addEventListener('change', function (e) {
+  store.set('__historyMeta.url', this.value);
+});
+
+/*********************************************************************
  *                       popup 
  ********************************************************************/
 /**
@@ -456,10 +466,21 @@ document.addEventListener('paste', (e) => {
 
   // recover cache url
   jsURLDOM.value = store.get('url_last_time');
-  // request demo
-  fetch('/README.md')
-    .then(r => r.text())
-    .then(t => window.MdEditor.val(t));
+
+  // history
+  let historyContent = store.get('__lastContent');
+  let historyAuthor = store.get('__historyMeta.author') || '';
+  let historyURL = store.get('__historyMeta.url') || '';
+  if (!historyContent) {
+    // request demo
+    fetch('/README.md')
+      .then(r => r.text())
+      .then(t => window.MdEditor.val(t));
+  } else {
+    window.MdEditor.val(historyContent);
+    authorDOM.value = historyAuthor;
+    urlDOM.value = historyURL;
+  }
 
   // shakehands, request for any token
   sendMsg(WX_COMMON_PATTERN, { type: 'shakehands' }).catch(wxPageNotFound);

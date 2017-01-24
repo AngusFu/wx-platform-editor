@@ -215,13 +215,20 @@ const onMessage = {
 
     let editor = getWxEditor();
     editor.innerHTML = message.data;
+
     // author
-    qs('#author').value = message.author.slice(0, 8);
-    // url
-    if (!qs('.js_url_checkbox').checked) {
-      qs('.js_url_checkbox').click();
+    if (message.author) {
+      qs('#author').value = message.author.slice(0, 8);
     }
-    qs('.js_url').value = message.url;
+
+    // url
+    if (message.url) {
+      if (!qs('.js_url_checkbox').checked) {
+        qs('.js_url_checkbox').click();
+      }
+
+      qs('.js_url').value = message.url;
+    }
 
     // TODO: all done in option.html
     // title
@@ -231,7 +238,6 @@ const onMessage = {
   },
 
   upload(message) {
-    // TODO: fix unsupported types and large pics
     uploadImage(message.data)
       .then(res => JSON.parse(res))
       .then(data => {

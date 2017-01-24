@@ -1,8 +1,6 @@
-# 微信公众号编辑助手
+介绍下最近刚刚完成的简单的微信公众号编辑助手插件，可用于抓取博客，生成 `Markdown`，经过渲染后，可以注入一键注入到公众号编辑器：帮你省去 C+V 步骤，也无需从其他网页保存图片然后再手动上传。
 
-简单的微信公众号编辑助手插件。可用于抓取博客，生成 `Markdown` 并注入一键注入到公众号编辑器。
-
-如果您只需要代码高亮功能，请访问 [https://angusfu.github.io/wx-editor/](https://angusfu.github.io/wx-editor/)。
+当然，也可以当作代码高亮的工具来使用。如果您只需要高亮功能，建议访问 [https://angusfu.github.io/wx-editor/](https://angusfu.github.io/wx-editor/)。
 
 ![截图](./images/screenshot.png)
 
@@ -49,4 +47,4 @@
 ## TODO
 
 1. 外站相对路径解析
-2. Markdown 编辑器暂不支持 HTML 标签
+2. Markdown 编辑器暂不支持文内 HTML 标签高亮

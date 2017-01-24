@@ -48,7 +48,7 @@ const store = {
   },
 
   get(key) {
-    return JSON.parse(this.db.getItem(this.prefix + key));
+    return this.has(key) && JSON.parse(this.db.getItem(this.prefix + key)) || null;
   },
 
   has(key) {

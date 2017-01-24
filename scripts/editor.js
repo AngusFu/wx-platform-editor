@@ -1,6 +1,21 @@
 /**
  * http://www.zcfy.cc/static/js/article.js?v=8d1f3.js
  */
+// fix `width, height` properties on <img>
+const fixImageDimension = img => {
+  let width  = parseInt(img.getAttribute('width'));
+  let height = parseInt(img.getAttribute('height'));
+  
+  if (!isNaN(width)) {
+    img.style.width = width + 'px';
+    img.removeAttribute('width');
+  }
+  if (!isNaN(height)) {
+    img.style.height = height + 'px';
+    img.removeAttribute('height')
+  }
+};
+
 const generateMdText = content => {
   return toMarkdown(content, {
     gfm: false,
@@ -73,6 +88,7 @@ const generateMdText = content => {
     let query = (s, cb) => getAll(s, offlineDIV).forEach(el => cb && cb(el));
 
     let text = editor.val();
+    store.set('__lastContent', text);
     offlineDIV.innerHTML = window.marked(text);
 
     // remove `meta`
@@ -141,10 +157,11 @@ const generateMdText = content => {
     // img 处理
     // 只针对单个成一段的 img
     query('img', img => {
-      // <p><img src=""></p>
+      // case: <p><img src=""></p>
       if (img.parentNode.innerHTML.trim() === img.outerHTML.trim()) {
         img.parentNode.className += 'img-wrap';
       }
+      fixImageDimension(img);
     });
 
     // list
