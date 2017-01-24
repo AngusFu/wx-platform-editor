@@ -174,6 +174,10 @@ body {
 .pop-form-content > div > label > i:hover {
   color: coral;
 }
+.pop-form-content > div > label > .net-err {
+  display: none;
+  color: #d14;
+}
 
 .pop-form-content > div > input,
 .pop-form-content > div > textarea {
@@ -295,6 +299,94 @@ body {
   outline: 0;
 }
 
+/*-----------------------------
+        clip button styles
+-----------------------------*/
+.clip-btn {
+  -webkit-transition: opacity 0.3s ease-in-out;
+  transition: opacity 0.3s ease-in-out;
+  opacity: .5;
+  padding: 2px 6px;
+  position: absolute;
+  right: 4px;
+  top: 4px
+}
+
+.highlight:hover .clip-btn {
+  opacity: 1
+}
+
+.clip-btn {
+  position: absolute;
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 20px;
+  color: #333;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  background-color: #eee;
+  background-image: -webkit-linear-gradient(#fcfcfc, #eee);
+  background-image: linear-gradient(#fcfcfc, #eee);
+  border: 1px solid #d5d5d5;
+  border-radius: 3px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-appearance: none
+}
+
+.clip-btn:focus {
+  text-decoration: none;
+  border-color: #51a7e8;
+  outline: none;
+  box-shadow: 0 0 5px rgba(81,167,232,0.5)
+}
+
+.clip-btn:focus:hover,.clip-btn.selected:focus {
+  border-color: #51a7e8
+}
+
+.clip-btn:hover,.clip-btn:active,.clip-btn.zeroclipboard-is-hover,.clip-btn.zeroclipboard-is-active {
+  text-decoration: none;
+  background-color: #ddd;
+  background-image: -webkit-linear-gradient(#eee, #ddd);
+  background-image: linear-gradient(#eee, #ddd);
+  border-color: #ccc
+}
+
+.clip-btn:active,.clip-btn.selected,.clip-btn.zeroclipboard-is-active {
+  background-color: #dcdcdc;
+  background-image: none;
+  border-color: #b5b5b5;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.15)
+}
+
+.clip-btn.selected:hover {
+  background-color: #cfcfcf
+}
+
+.clip-btn:disabled,.clip-btn:disabled:hover,.clip-btn.disabled,.clip-btn.disabled:hover {
+  color: rgba(102,102,102,0.5);
+  cursor: default;
+  background-color: rgba(229,229,229,0.5);
+  background-image: none;
+  border-color: rgba(197,197,197,0.5);
+  box-shadow: none
+}
+
+.clippy {
+  margin: -3px 0 0 0;
+  position: relative;
+  top: 3px
+}
+
+.clip-btn[disabled] .clippy {
+  opacity: .3
+}
 
 /**======================================================*/
 /*-----------------------------

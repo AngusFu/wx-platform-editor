@@ -239,7 +239,7 @@ if (themeDOM) {
     currentThemeIndex += 1;
     let type = themes[currentThemeIndex % themesLen];
     type = type === 'default' ? '' : type;
-    let url = type ? `/option/styles/prism-${type}.css` : '/option/styles/prism.css';
+    let url = type ? `/styles/prism-${type}.css` : '/styles/prism.css';
     getDOM('#prismTheme').setAttribute('href', url);
   });
 }
@@ -273,6 +273,13 @@ getDOM('#jsNewBtn').addEventListener('click', (e) => {
  */
 getDOM('#jsWeekly').addEventListener('click', (e) => {
   wxInjector.init();
+});
+
+/**
+ * just copy
+ */
+getDOM('#jsJustCopy').addEventListener('click', (e) => {
+  copy(previewDOM);
 });
 
 /*********************************************************************

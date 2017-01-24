@@ -15,9 +15,10 @@
     </div>
 
     <div class="btns">
-      <a href="#" id="jsChangeTheme" title="切换代码样式">Code Style</a>
       <a href="#" id="jsNewBtn" title="重新选择文章">New</a>
+      <a href="#" id="jsChangeTheme" title="切换代码样式">Code Style</a>
       <a href="#" id="jsWeekly" title="编辑奇舞周刊">Weekly</a>
+      <a href="#" id="jsJustCopy" title="仅复制到剪切板">Copy</a>
       <a href="#" id="jsWxInjectBtn" title="注入到微信编辑器中">Inject</a>
     </div>
   </div>
@@ -42,7 +43,7 @@
   <div class="pop-form-mask">
     <form id="weeklyForm" class="pop-form-content">
       <div class="left-part">
-        <label>期数</label>
+        <label>期数<i class="net-err">发生网络错误，抓取失败，请检查</i></label>
         <input type="number" id="weeklyIndex" placeholder="请输入周刊期数" min="1" required>
 
         <label>作者</label>

@@ -65,7 +65,7 @@ const wxInjector = {
     };
 
     this.origin = url;
-
+    getDOM('.net-err').style.display = 'none';
     if (cache[index]) {
       return Promise.resolve(cache[index]);
     }
@@ -84,6 +84,7 @@ const wxInjector = {
         return err;
       })
       .catch(function (e) {
+        getDOM('.net-err').style.display = 'block';
         console.error(e, err);
         return err;
       });
@@ -270,6 +271,7 @@ const wxInjector = {
 
     this.fetchNewestIndex().then(index => {
       let indexDOM = getDOM('#weeklyIndex');
+      indexDOM.setAttribute('max', index);
       indexDOM.value = index;
       dispatch(indexDOM, 'change');
     }).catch(e => {
