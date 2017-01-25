@@ -1,8 +1,7 @@
-
 /**
- * 一些数据初始化的工作
+ * 奇舞周刊微信工具
  */
-const wxInjector = {
+const weeklyInjector = {
   element: getDOM('.pop-form-mask'),
   cache: {},
   abstract: [

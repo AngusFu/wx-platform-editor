@@ -64,6 +64,15 @@ const store = {
 };
 
 /**
+ * generate DOM from string
+ */
+const divWrap = (html) => {
+  let div = create('div');
+  div.innerHTML = html;
+  return div;
+};
+
+/**
  * dispatch event
  */
 const dispatch = (elem, name) => {

@@ -1,7 +1,7 @@
 /**
  * query tab
  */
-const queryTabs = (url) => new Promise((resolve, reject) => {
+const queryTabs = url => new Promise((resolve, reject) => {
   chrome.tabs.query({ url }, (tabs) => {
     if (!tabs.length) {
       reject('no tabs matched');
@@ -58,23 +58,14 @@ const wxPageNotFound = function () {
 /**
  * focus on weixin editor tab
  */
-const focusTab = function (url) {
-  chrome.tabs.query({ url }, tabs => {
+const focusTab = url => {
+  return queryTabs(url).then(tabs => {
     if (!tabs.length) {
       wxPageNotFound();
     } else {
       chrome.tabs.update(tabs[0].id, { selected: true });
     }
   });
-};
-
-/**
- * generate DOM from string
- */
-const divWrap = (clipData) => {
-  let div = create('div');
-  div.innerHTML = clipData;
-  return div;
 };
 
 /**
@@ -158,7 +149,6 @@ const requestUpload = (url) => {
     return Promise.resolve(hash);
   }
 
-  
   store.set(hash, ERROR_IMAGES.typeError);
   throw `${url} is not allowed`;
 };
@@ -272,7 +262,7 @@ getDOM('#jsNewBtn').addEventListener('click', (e) => {
  * weekly
  */
 getDOM('#jsWeekly').addEventListener('click', (e) => {
-  wxInjector.init();
+  weeklyInjector.init();
 });
 
 /**
@@ -463,7 +453,6 @@ document.addEventListener('paste', (e) => {
 
 
 ;(function init() {
-
   // recover cache url
   jsURLDOM.value = store.get('url_last_time');
 
@@ -484,6 +473,7 @@ document.addEventListener('paste', (e) => {
 
   // shakehands, request for any token
   sendMsg(WX_COMMON_PATTERN, { type: 'shakehands' }).catch(wxPageNotFound);
+
   // if we can't shakehands with any page 
   // then we have to wait for any msg from weixin page
   chrome.runtime.onMessage.addListener(function (msg) {
