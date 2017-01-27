@@ -21,11 +21,11 @@
     "content_scripts": [{
         "run_at": "document_end",
         "matches": ["https://mp.weixin.qq.com/cgi-bin/appmsg?t=media/appmsg_edit*"],
-        "js": ["./inject.js", "./weekly.inject.js"]
+        "js": ["./content_script/blog.inject.js", "./content_script/weekly.inject.js"]
     }, {
         "run_at": "document_end",
         "matches": ["https://mp.weixin.qq.com/cgi-bin/*"],
-        "js": ["./wxtoken.js"]
+        "js": ["./content_script/wxtoken.js"]
     }],
     "background": {
         "scripts": ["./background.js"]

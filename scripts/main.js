@@ -434,10 +434,24 @@ document.addEventListener('paste', (e) => {
   
   // replace url
   Promise.all(promises).then(() => {
+    /*
     store.keys().forEach(hash => {
       let { cdn_url } = store.get(hash);
       getAll(`.hash_${hash}`, divDOM).forEach(img => img.src = cdn_url);
     });
+    */
+    getAll('img[class*="hash_"', divDOM)
+      .forEach(img => {
+        let match = img.className.match(/(^|\s*)hash_([^\s]+)/);
+        let hash = match && match[2];
+        if (hash) {
+          let { cdn_url } = store.get(hash);
+
+          if (cdn_url) {
+            img.src = cdn_url;
+          }
+        }
+      });
     
     // inject
     sendMsg(WX_EDITOR_PATTERN, {

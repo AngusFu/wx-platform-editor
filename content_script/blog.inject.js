@@ -230,11 +230,7 @@ const onMessage = {
       qs('.js_url').value = message.url;
     }
 
-    // TODO: all done in option.html
-    // title
-    // qs('#title').value 
-    //   = qs('.cover_appmsg_item .appmsg_title .js_appmsg_title').innerHTML
-    //   = message.title.slice(0, 64);
+    // TODO: we can do more...
   },
 
   upload(message) {
