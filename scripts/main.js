@@ -337,17 +337,18 @@ submitDOM.addEventListener('click', function (e) {
   store.set('url_last_time', url);
 
   getMarkdownContent(url)
-  .then(o => {
-    // fix relative path of imgs
-    let { content, url } = o;
-    let divDOM = divWrap(content);
-    getAll('img', divDOM).forEach(img => {
-      img.src = (new URL(img.src, url)).href;
-    });
+  // fix relative path of imgs
+  // TODO: divWrap can cause problem
+  // .then(o => {
+  //   let { content, url } = o;
+  //   let divDOM = divWrap(content);
+  //   getAll('img', divDOM).forEach(img => {
+  //     img.src = (new URL(img.src, url)).href;
+  //   });
     
-    o.content = divDOM.innerHTML;
-    return o;
-  })
+  //   o.content = divDOM.innerHTML;
+  //   return o;
+  // })
   .then(o => {
     if (!o) {
       errTipDOM.innerHTML = '抱歉，无法抓取该 url 对应的内容';
