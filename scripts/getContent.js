@@ -121,7 +121,7 @@ const getMarkdownContent = url => {
     })
     .then(obj => {
       if (!obj) {
-        return null;
+        throw 'got null content';
       }
 
       let { title, author, content } = obj;
