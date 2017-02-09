@@ -92,7 +92,8 @@ const wxProof = content => {
   // 只针对单个成一段的 img
   query('img', img => {
     // case: <p><img src=""></p>
-    if (img.parentNode.innerHTML.trim() === img.outerHTML.trim()) {
+    var isFirstElemChild = img.parentNode.firstElementChild === img;
+    if (isFirstElemChild) {
       img.parentNode.className += 'img-wrap';
     }
     fixImageDimension(img);
