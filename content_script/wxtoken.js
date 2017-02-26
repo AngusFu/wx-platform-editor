@@ -9,11 +9,12 @@ let type = params.get('t');
 let token = params.get('token');
  
 let hasError = document.querySelector('.page_error') || document.querySelector('.page_timeout');
+let isSendMsg = /masssendpage\?/.test(location.href);
 let isEditor = /media\/appmsg_edit/.test(type);
 
 // any wexin page that contains token
 // except editor page
-if (token && !hasError && !isEditor) {
+if (token && !hasError && !isEditor && !isSendMsg) {
   console.log(token);
 
   const onMessage = {
