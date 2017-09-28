@@ -3,7 +3,7 @@
  */
 const zcfyRegex = /^https?:\/\/(www\.)?zcfy\.cc\/(article|api)\//;
 const isZcfyURL = url => zcfyRegex.test(url);
-const wemlionRegex = /^https?:\/\/www\.wemlion\.com\/\d{4}\/([^\/]+)/;
+const wemlionRegex = /^https?:\/\/www\.wemlion\.com\/post\/([^\/]+)/;
 const isWemlionURL = url => wemlionRegex.test(url);
 
 /**
