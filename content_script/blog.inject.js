@@ -91,7 +91,7 @@ const dataURItoBlob = function (dataURI) {
  */
 const uploadImage = (function () {
   // 暴力破解
-  var scripts = Array.from(document.querySelectorAll('script[type="text/javascript"]""]')).filter(s => s.src === '')'');
+  var scripts = Array.from(document.querySelectorAll('script[type="text/javascript"]')).filter(s => s.src === '');
   var len = scripts.length;
   var content = '';
 
