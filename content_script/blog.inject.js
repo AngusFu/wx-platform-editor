@@ -91,13 +91,13 @@ const dataURItoBlob = function (dataURI) {
  */
 const uploadImage = (function () {
   // 暴力破解
-  var scripts = Array.from(document.querySelectorAll('script'));
+  var scripts = Array.from(document.querySelectorAll('script[type="text/javascript"]""]')).filter(s => s.src === '')'');
   var len = scripts.length;
   var content = '';
 
   while (len--)
     if (content = scripts[len].textContent) {
-      if (/try\s*\{\s*window\.wx\s*\=\s*\{\s*\n/m.test(content)) {
+      if (/try\s*\{\s*[\s\S]*window\.wx\s*\=\s*\{\s*\n/m.test(content)) {
         try {
           eval(content);
         } catch (e) {}
