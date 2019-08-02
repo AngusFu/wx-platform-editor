@@ -4,11 +4,13 @@
 
 .CodeMirror-dialog > div {
   position: absolute;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   background: white;
   border-bottom: 1px solid #eee;
   z-index: 15;
-  padding: .1em .8em;
+  padding: 0.1em 0.8em;
   overflow: hidden;
   color: #333;
 }

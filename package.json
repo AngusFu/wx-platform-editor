@@ -1,0 +1,26 @@
+{
+  "name": "wx-platform-editor-master",
+  "version": "2.0.0",
+  "description": "微信公众号编辑助手插件",
+  "main": "background.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "format": "pretty-quick --pattern \"**/*.*(js|jsx|scss|css)\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AngusFu/wx-platform-editor.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AngusFu/wx-platform-editor/issues"
+  },
+  "homepage": "https://github.com/AngusFu/wx-platform-editor#readme",
+  "devDependencies": {
+    "prettier": "^1.18.2",
+    "pretty-quick": "^1.11.1"
+  }
+}
