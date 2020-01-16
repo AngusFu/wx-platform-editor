@@ -140,6 +140,7 @@ const renderPreview = function(targetDOM, markdown) {
   var weeklyEnd = `
     <h2>关于奇舞周刊</h2>
     <p class="weekly-end-desc">《奇舞周刊》是360公司专业前端团队「<span>奇舞团</span>」运营的前端技术社区。关注公众号后，直接发送链接到后台即可给我们投稿。</p>
+    <p class="weekly-end-desc">奇舞团是360集团最大的大前端团队，代表集团参与W3C和Ecma会员（TC39）工作。奇舞团非常重视人才培养，有工程师、讲师、翻译官、业务接口人、团队Leader等多种发展方向供员工选择，并辅以提供相应的技术力、专业力、通用力、领导力等培训课程。奇舞团以开放和求贤的心态欢迎各种优秀人才关注和加入奇舞团。</p>
     <img class="weekly-end-img" src="https://mmbiz.qlogo.cn/mmbiz_png/MpGQUHiaib4ib6j9X9s2kibfaicBLmIm6dUBqymVmiaKqGFEPn0G3VyVnqQjvognHq4cMibayW2400j4OyEtdz5fkMbmA/0?wx_fmt=png">
   `
 
